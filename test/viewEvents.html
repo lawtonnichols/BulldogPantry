@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf8">
+<title>Events — The Bulldog Pantry</title>
+
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+
+<style>
+body {background-color: #f5f5f5;}
+table#EventTable {width: 65em; margin: 0 auto;}
+th#TitleHeader {min-width: 10em;}
+th#DateHeader {min-width: 5em;}
+th#SpotsLeft {min-width: 5em;}
+div#EditDeleteButtons button {min-width: 5em;}
+div#EditDeleteButtons {display: none; position: absolute; width: 100%;}
+td.td-center {text-align: center;}
+</style>
+
+<script>
+var page = 1;
+var timer;
+var selectedID;
+
+function removeButtons()
+{
+	$("#EditDeleteButtons").fadeOut("slow");
+}
+
+$(document).ready(function () {
+	$("tbody tr").mousemove(function() {
+		$("#EditDeleteButtons").stop(true, true).show();
+		//$("#EditDeleteButtons").fadeOut("fast");
+		selectedID = $(this).attr('id');
+		var y = $(this).offset().top;
+		var height = $(this).height();
+		var pheight = $("#EditDeleteButtons button").height();
+		var paddingTop = height / 2 - pheight;
+		$("#EditDeleteButtons").css("top", y).css("left", 0).css("height", height + "px");
+		$("#EditDeleteButtons p").css("padding-top", paddingTop + "px");
+		//$("#EditDeleteButtons").stop(true, true).show("slow");
+		//$("#EditDeleteButtons").fadeIn("fast");
+		clearTimeout(timer);
+		timer = setTimeout(removeButtons, 1500);
+	});
+	
+	$("#EditDeleteButtons button").mouseover(function () {
+		clearTimeout(timer);
+		$("#EditDeleteButtons").stop(true, true).show();
+	});
+	
+	$("#EditDeleteButtons button").mouseout(function () {
+		timer = setTimeout(removeButtons, 1500);
+	});
+	
+	$("button.Edit").click(function () {
+		window.location = "/edit.php?itemID=" + selectedID;
+	});
+	
+	$("button.Delete").click(function () {
+		if (confirm("Please confirm that you would like to delete this entry.")) {
+			window.location = "/delete.php?itemID=" + selectedID;
+		}
+	});
+	
+	$("button#PreviousPage").click(function () {
+		window.location = window.location.pathname + "?page=" + (page - 1);
+	});
+	
+	$("button#NextPage").click(function () {
+		window.location = window.location.pathname + "?page=" + (page + 1);
+	});
+	
+	
+	
+});
+</script>
+
+</head>
+<body>
+<h1 class="text-center">Current Events</h1>
+
+<table class="table table-striped" id="EventTable">
+	<thead>
+		<th id="TitleHeader">Event Title</th><th id="DateHeader">Date</th><th>Event Description</th>
+		<th>Spots</th><th id="SpotsLeft">Spots Left</th>
+	</thead>
+	<tbody>
+	<tr id="1234"><td>Lorem Ipsum Dolor</td><td>Saturday,&nbsp;May&nbsp;5,&nbsp;2013, 11:00 a.m. to 12:00 p.m.</td><td>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, lorem sit amet vulputate sodales, erat mi accumsan nisi, vel varius mi ipsum a dolor. Cras volutpat malesuada luctus. Nullam sollicitudin sem neque, quis placerat elit aliquet vel. Cras a sagittis sapien, id dapibus nunc. In sit amet diam porta sapien ullamcorper gravida.</td><td class="td-center">5</td><td class="SpotsLeft td-center">3</td></tr>
+	<tr id="4689"><td>Lorem Ipsum Dolor2</td><td>May 5, 2013, 2:00–5:00 p.m.</td><td>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, lorem sit amet vulputate sodales, erat mi accumsan nisi, vel varius mi ipsum a dolor. Cras volutpat malesuada luctus. Nullam sollicitudin sem neque, quis placerat elit aliquet vel. Cras a sagittis sapien, id dapibus nunc. In sit amet diam porta sapien ullamcorper gravida.</td><td class="td-center">4</td><td class="SpotsLeft td-center">0</td></tr>
+	<tr id="1234"><td>Lorem Ipsum Dolor</td><td>Saturday,&nbsp;May&nbsp;5,&nbsp;2013, 11:00 a.m. to 12:00 p.m.</td><td>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, lorem sit amet vulputate sodales, erat mi accumsan nisi, vel varius mi ipsum a dolor. Cras volutpat malesuada luctus. Nullam sollicitudin sem neque, quis placerat elit aliquet vel. Cras a sagittis sapien, id dapibus nunc. In sit amet diam porta sapien ullamcorper gravida.</td><td class="td-center">5</td><td class="SpotsLeft td-center">3</td></tr>
+	<tr id="4689"><td>Lorem Ipsum Dolor2</td><td>May 5, 2013, 2:00–5:00 p.m.</td><td>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, lorem sit amet vulputate sodales, erat mi accumsan nisi, vel varius mi ipsum a dolor. Cras volutpat malesuada luctus. Nullam sollicitudin sem neque, quis placerat elit aliquet vel. Cras a sagittis sapien, id dapibus nunc. In sit amet diam porta sapien ullamcorper gravida.</td><td class="td-center">4</td><td class="SpotsLeft td-center">0</td></tr>
+	
+	</tbody>
+</table>
+
+<div id="EditDeleteButtons">
+<p class="text-center">
+	<button class="btn btn-info btn-large Edit">Edit</button>
+	<button class="btn btn-danger btn-large Delete">Delete</button>
+</p>
+</div>
+
+<p class="text-center">
+<button class="btn btn-large" id="PreviousPage" disabled="disabled"><i class="icon-arrow-left text-large"></i></button>
+<button class="btn btn-large" id="NextPage"><i class="icon-arrow-right text-large"></i></button>
+</p>
+</body>
+</html>

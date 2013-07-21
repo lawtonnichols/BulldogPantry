@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf8">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script>
+$(document).ready(function () {
+	$("li").mouseenter(function () {
+		var autoHeight = $(this).css("height", "auto").height();
+		$(this).css("height", "5.1em");
+		//$("li").stop().animate({height: "3em"}, "slow");
+		$(this).stop(true, false).animate({height: autoHeight}, 378);
+	});
+	$("li").mouseleave(function () {
+		//$("li").stop().animate({height: "3em"}, "slow");
+		$(this).stop(true, false).animate({height: "5.1em"}, 378);
+	});
+});
+</script>
+
+<style>
+* {margin: 0; padding: 0;}
+body {background-color: #f0f2d9;}
+h1 {background-color: #6b2425; color: white; text-align: center; padding: 1em;}
+ul {list-style-type: none; display: inline; position: relative; left: 32.5%;}
+li {display: block; height: 5.1em; overflow: hidden; width: 35%; color: white;}
+li div {padding: 1em; text-align: center;}
+/*li:nth-child(3n+1) {background: #69D2E7;}
+li:nth-child(5n+2) {background: #A7DBD8;}
+li:nth-child(5n+3) {background: #E0E4CC;}*/
+li:nth-child(2n+1) {background: #d1e3f0; color: black;}
+li:nth-child(2n+2) {background: #6acdc3; color: black;}
+div#ListContainer {text-align: center; position: relative; width: 100%; overflow: hidden;}
+button {background: #40bf42; color: white;}
+div#ExtraSpace {height: 30em;}
+</style>
+</head>
+
+<body>
+<h1>Upcoming Events at the Bulldog Pantry</h1>
+<div id="ListContainer">
+<ul>
+<!--
+	<li><div><span>Tuesday, 12 March 2013, 9:00-10:00</span></div></li>
+	<li><div><span>Wednesday, 13 March 2013, 10:00-11:00</span></div></li>
+	<li><div><span>Thursday, 14 March 2013, 11:00-12:00</span></div></li>
+-->
+	<li><div>Tuesday, 12 March 2013, 9:00-10:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Wednesday, 13 March 2013, 10:00-11:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Thursday, 14 March 2013, 11:00-12:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Thursday, 14 March 2013, 11:00-12:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Tuesday, 12 March 2013, 9:00-10:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Wednesday, 13 March 2013, 10:00-11:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Thursday, 14 March 2013, 11:00-12:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Thursday, 14 March 2013, 11:00-12:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Tuesday, 12 March 2013, 9:00-10:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Wednesday, 13 March 2013, 10:00-11:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Thursday, 14 March 2013, 11:00-12:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+	<li><div>Thursday, 14 March 2013, 11:00-12:00<br><br>asdf<br>asdf<br>asdf<br>asdf<br><button>Sign up for this event</button></div></li>
+</ul>
+</div>
+<div id="ExtraSpace"></div>
+</body>
+</html>

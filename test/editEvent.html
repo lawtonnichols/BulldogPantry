@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf8">
+<title>Edit Event</title>
+
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+<link href="http://code.jquery.com/ui/jquery-ui-git.css" rel="stylesheet">
+<script src="http://code.jquery.com/ui/jquery-ui-git.js"></script>
+
+<script>
+function validate()
+{
+	var ret = true;
+
+	// clear all warnings
+	$("#EventTitleError").html("");
+	$("#DateError").html("");
+	$("#StartTimeError").html("");
+	$("#NumberOfSpotsError").html("");
+
+	var f = document.EditEventForm;
+
+	var eventTitle = f.EventTitle.value;
+	var date = f.Date.value;
+	var numberOfSpots = f.NumberOfSpots.value;
+	
+	if (eventTitle.length == 0)
+	{
+		$("#EventTitleError").html("<strong>Please enter an event title.</strong>");
+		ret = false;
+	}
+	if (numberOfSpots.length == 0)
+	{
+		$("#NumberOfSpotsError").html("<strong>Please enter the number of spots.</strong>");
+		ret = false;
+	}
+	if (date.length == 0)
+	{
+		$("#DateError").html("<strong>Please enter a date.</strong>");
+		return false; // we can't continue and compare times if we don't have a date
+	}
+	
+	// we have a date to go off of, so we can check the times
+	var startTimeHours = f.StartTimeHours.options[f.StartTimeHours.selectedIndex].value;
+	var startTimeMinutes = f.StartTimeMinutes.options[f.StartTimeMinutes.selectedIndex].value;
+	var startTimeAmPm = f.StartTimeAmPm.options[f.StartTimeAmPm.selectedIndex].value;
+	var endTimeHours = f.EndTimeHours.options[f.EndTimeHours.selectedIndex].value;
+	var endTimeMinutes = f.EndTimeMinutes.options[f.EndTimeMinutes.selectedIndex].value;
+	var endTimeAmPm = f.EndTimeAmPm.options[f.EndTimeAmPm.selectedIndex].value;
+	
+	var startTime = new Date(date + " " + startTimeHours + ":" + startTimeMinutes + " " + startTimeAmPm);
+	var endTime = new Date(date + " " + endTimeHours + ":" + endTimeMinutes + " " + endTimeAmPm);
+	
+	if (startTime.getTime() >= endTime.getTime())
+	{
+		$("#StartTimeError").html("<strong>The start time must be earlier than the end time.</strong>");
+		ret = false;
+	}
+	
+	return ret;
+}
+
+$(document).ready(function () {
+	$("#datepicker").datepicker();
+	
+	$("#SaveButton").click(function () {
+		if (validate())
+			document.EditEventForm.submit();
+	});
+	
+	$("#CancelButton").click(function() {
+		window.history.go(-1);
+	});
+});
+</script>
+
+<style>
+body {background-color: #f5f5f5;}
+textarea {width: 30em; height: 7em;}
+#container {margin: 0 auto; width: 30em; padding-top: 2em;}
+select {display: inline; width: auto;}
+button {min-width: 5.5em;}
+p#EditCancelButtons {padding-top: 1em;}
+td#icontd {padding-right: .5em;}
+textarea#EmailAddresses {font-family: monospace; font-size: larger; width: 26em;}
+</style>
+</head>
+<body>
+<h1 class="text-center">Edit Event</h1>
+<div id="container">
+<form name="EditEventForm" method="post" action="executeEditEvent.php">
+	<input type="hidden" name="EventID" value="5">
+	<p>
+		<label>Event Title:</label>
+		<label id="EventTitleError" class="text-error"></label>
+		<input type="text" name="EventTitle">
+	</p>
+	<p>
+		<label>Date:</label> 
+		<label id="DateError" class="text-error"></label>
+		<input type="text" id="datepicker" name="Date">
+	</p>
+	<p>
+		<label>Start Time:</label>
+		<label id="StartTimeError" class="text-error"></label>
+		<select name="StartTimeHours">
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+			<option value="7">7</option>
+			<option value="8" selected="selected">8</option>
+			<option value="9">9</option>
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+		</select> :
+		<select name="StartTimeMinutes">
+			<option value="00" selected="selected">00</option>
+			<option value="05">05</option>
+			<option value="10">10</option>
+			<option value="15">15</option>
+			<option value="20">20</option>
+			<option value="25">25</option>
+			<option value="30">30</option>
+			<option value="35">35</option>
+			<option value="40">40</option>
+			<option value="45">45</option>
+			<option value="50">50</option>
+			<option value="55">55</option>
+		</select>
+		<select name="StartTimeAmPm">
+			<option value="am">a.m.</option>
+			<option value="pm">p.m.</option>
+		</select>
+	</p>
+	<p><label>End Time:</label>
+		<select name="EndTimeHours">
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+			<option value="7">7</option>
+			<option value="8" selected="selected">8</option>
+			<option value="9">9</option>
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+		</select> :
+		<select name="EndTimeMinutes">
+			<option value="00" selected="selected">00</option>
+			<option value="05">05</option>
+			<option value="10">10</option>
+			<option value="15">15</option>
+			<option value="20">20</option>
+			<option value="25">25</option>
+			<option value="30">30</option>
+			<option value="35">35</option>
+			<option value="40">40</option>
+			<option value="45">45</option>
+			<option value="50">50</option>
+			<option value="55">55</option>
+		</select>
+		<select name="EndTimeAmPm">
+			<option value="am">a.m.</option>
+			<option value="pm">p.m.</option>
+		</select>
+	</p>
+	<p><label>Event Description:</label> <textarea name="EventDescription"></textarea></p>
+	<p>
+		<label>Number of Spots:</label> 
+		<label id="NumberOfSpotsError" class="text-error"></label>
+		<input type="text" name="NumberOfSpots">
+	</p>
+	<p>Spots Remaining: 5</p>
+	<p>Email Addresses of Volunteers for this Event:
+<textarea name="EmailAddresses" id="EmailAddresses">asd
+sadg
+asdf</textarea></p>
+	<table><tr valign="top"><td id="icontd"><i class="icon-star"></i></td>
+		<td><p class="muted">To manually add or remove a volunteer, add an email to a new line, or remove an email from an existing one.</p></td>
+	</tr></table>
+	<p class="text-center">
+		<button class="btn btn-info" id="SendEmailButton" onclick="return false;">
+			<i class="icon-envelope icon-white"></i> Send an Email to All Volunteers
+		</button>
+	</p>
+	<p class="text-center" id="EditCancelButtons">
+		<button class="btn btn-large btn-primary Save" id="SaveButton" onclick="return false;">Save</button>
+		<button class="btn btn-large btn-danger Cancel" id="CancelButton" onclick="return false;">Cancel</button>
+	</p>
+</form>
+</div>
+</body>
+</html>
