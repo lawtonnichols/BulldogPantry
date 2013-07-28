@@ -1,4 +1,7 @@
 <?php
+
+require_once("startSessionOrError.php");
+
 error_reporting(E_ALL);
 $error = false;	
 

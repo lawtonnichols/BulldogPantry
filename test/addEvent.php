@@ -1,3 +1,8 @@
+<?php 
+
+require_once("startSessionOrError.php"); 
+
+?>
 <!doctype html>
 <html>
 <head>
@@ -83,9 +88,11 @@ textarea {width: 30em; height: 7em;}
 #container {margin: 0 auto; width: 30em; padding-top: 2em;}
 select {display: inline; width: auto;}
 button.Add {width: 5em;}
+p.text-right {padding-right: 1em; padding-top: .5em;}
 </style>
 </head>
 <body>
+<?php displayUsername(); ?>
 <h1 class="text-center">Add New Event</h1>
 <div id="container">
 <form name="AddEventForm" method="post" action="executeAddEvent.php">

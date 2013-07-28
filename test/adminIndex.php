@@ -1,3 +1,8 @@
+<?php
+
+require_once("startSessionOrError.php");
+
+?>
 <!doctype html>
 <html>
 <head>
@@ -12,17 +17,6 @@
 
 <script>
 $(document).ready(function () {
-	$("a.dangerous").click(function () {
-		if ($(this).hasClass("btn-warning")) {
-			$(this).removeClass("btn-warning");
-			$(this).html("Are you sure?");
-			return false;
-		}
-		else {
-			return true;
-		}
-	});
-	
 	$("a.super-dangerous").click(function () {
 		if ($(this).hasClass("btn-danger")) {
 			$(this).removeClass("btn-danger");
@@ -53,11 +47,11 @@ p.text-right {padding-right: 1em; padding-top: .5em;}
 </style>
 </head>
 <body>
-<p class="text-right">You are logged in as <strong>username</strong>. <a href="">Logout</a></p>
+<?php displayUsername(); ?>
 <h1 class="text-center">Bulldog Pantry Administration</h1>
-<p class="text-center" id="First"><a href="" class="btn btn-primary btn-large">View / Edit Events</a></p>
-<p class="text-center"><a href="" class="btn btn-info btn-large">Change Password</a></p>
-<p class="text-center"><a href="" class="btn btn-warning btn-large dangerous">Delete Old Events</a></p>
+<p class="text-center" id="First"><a href="viewEvents.php" class="btn btn-primary btn-large">Manage Events</a></p>
+<p class="text-center"><a href="changePassword.php" class="btn btn-info btn-large">Change Password</a></p>
+<p class="text-center"><a href="deleteOldEvents.php" class="btn btn-warning btn-large">Delete Old Events</a></p>
 <p class="text-center"><a href="resetDB.php" class="btn btn-danger btn-large super-dangerous">Reset the Database</a></p>
 </body>
 </html>

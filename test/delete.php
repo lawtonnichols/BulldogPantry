@@ -1,5 +1,7 @@
 <?php
 
+require_once("startSessionOrError.php");
+
 if (isset($_GET['id']))
 {
 	$eventID = $_GET['id'];

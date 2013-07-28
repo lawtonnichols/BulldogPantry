@@ -1,5 +1,7 @@
 <?php
 
+require_once("startSessionOrError.php");
+
 $numberOfResultsPerPage = 5;
 
 if (!isset($_GET['page']))
@@ -124,6 +126,7 @@ td.td-center {text-align: center;}
 table#EventTable tbody tr {height: 10em; overflow: scroll;}
 table#EventTable tbody td {vertical-align: middle;}
 p#BackForwardButtons {padding-top: 1em;}
+p.text-right {padding-right: 1em; padding-top: .5em;}
 </style>
 
 <script>
@@ -191,6 +194,7 @@ $(document).ready(function () {
 
 </head>
 <body>
+<?php displayUsername(); ?>
 <h1 class="text-center">Current Events</h1>
 
 <p class="text-center">

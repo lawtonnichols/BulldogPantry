@@ -1,4 +1,6 @@
 <?php
+require_once("startSessionOrError.php");
+
 error_reporting(E_ALL);
 
 // from http://stackoverflow.com/questions/6023363/checking-if-a-database-exists-mysql-php

@@ -1,4 +1,5 @@
 <?php
+require_once("startSessionOrError.php");
 
 if (!isset($_GET['id']))
 {
@@ -206,9 +207,11 @@ button {min-width: 5.5em;}
 p#EditCancelButtons {padding-top: 1em;}
 td#icontd {padding-right: .5em;}
 textarea#EmailAddresses {font-family: monospace; font-size: larger; width: 26em;}
+p.text-right {padding-right: 1em; padding-top: .5em;}
 </style>
 </head>
 <body>
+<?php displayUsername(); ?>
 <h1 class="text-center">Edit Event</h1>
 <div id="container">
 <form name="EditEventForm" method="post" action="executeEditEvent.php">
