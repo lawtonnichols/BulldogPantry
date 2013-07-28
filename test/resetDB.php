@@ -67,6 +67,7 @@ $query = <<<END
 		event_start datetime not null,
 		event_end datetime not null,
 		event_description varchar(500),
+		number_of_spots int not null,
 		index(event_start)
 	);
 	

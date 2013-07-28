@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(E_ALL);
 $error = false;	
 
 if (isset($_POST['EventTitle']))
@@ -52,25 +52,35 @@ if ($error)
 // otherwise, add the new information to the database
 $date = date_create_from_format('m/d/Y', $date);
 $startTime = clone $date;
+if ($startTimeHours == 12 && $startTimeAmPm == "am")
+	$startTimeHours = 0;
 $startTime->setTime($startTimeHours, $startTimeMinutes);
-if ($startTimeAmPm == "pm")
+if ($startTimeAmPm == "pm" && $startTimeHours != 12)
 	$startTime->modify("+12 hours");
 $endTime = clone $date;
+if ($endTimeHours == 12 && $endTimeAmPm == "am")
+	$endTimeHours = 0;
 $endTime->setTime($endTimeHours, $endTimeMinutes);
-if ($endTimeAmPm == "pm")
+if ($endTimeAmPm == "pm" && $endTimeHours != 12)
 	$endTime->modify("+12 hours");
 	
 $startTimeString = $startTime->format("Y-m-d H:i:s");
 print $startTimeString . "\n";
 $endTimeString = $endTime->format("Y-m-d H:i:s");
-	
-$query = "insert into events (event_title, event_start, event_end, event_description) values " .
-		 "('$eventTitle', '$startTimeString', '$endTimeString', '$eventDescription')";
 
 $mysqli = new mysqli("localhost", "root", "root");
 $mysqli->select_db("BulldogPantry");
-$mysqli->query($query);
 
+$eventTitle = $mysqli->real_escape_string($eventTitle);
+$startTimeString = $mysqli->real_escape_string($startTimeString);
+$endTimeString = $mysqli->real_escape_string($endTimeString);
+$eventDescription = $mysqli->real_escape_string($eventDescription);
+$numberOfSpots = $mysqli->real_escape_string($numberOfSpots);
+
+$query = "insert into events (event_title, event_start, event_end, event_description, number_of_spots) values " .
+		 "('$eventTitle', '$startTimeString', '$endTimeString', '$eventDescription', $numberOfSpots)";
+
+$mysqli->query($query);
 print "Success";
 
 ?>

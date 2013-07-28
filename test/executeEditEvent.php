@@ -39,19 +39,23 @@ $emailAddresses = getPostVariable('EmailAddresses', false);
 
 if ($error)
 {
-	print "There was an error in your input. Please press back and try entering it again.";
+	header("Location: /error.html");
 	return;
 }
 
 // otherwise, add the new information to the database
 $date = date_create_from_format('m/d/Y', $date);
 $startTime = clone $date;
+if ($startTimeHours == 12 && $startTimeAmPm == "am")
+	$startTimeHours = 0;
 $startTime->setTime($startTimeHours, $startTimeMinutes);
-if ($startTimeAmPm == "pm")
+if ($startTimeAmPm == "pm" && $startTimeHours != 12)
 	$startTime->modify("+12 hours");
 $endTime = clone $date;
+if ($endTimeHours == 12 && $endTimeAmPm == "am")
+	$endTimeHours = 0;
 $endTime->setTime($endTimeHours, $endTimeMinutes);
-if ($endTimeAmPm == "pm")
+if ($endTimeAmPm == "pm" && $endTimeHours != 12)
 	$endTime->modify("+12 hours");
 	
 $startTimeString = $startTime->format("Y-m-d H:i:s");
@@ -62,20 +66,31 @@ $mysqli = new mysqli("localhost", "root", "root");
 $mysqli->select_db("BulldogPantry");
 
 $result = $mysqli->query("select email from volunteers where event_id = $eventID");
+$emailAddressesArrayNew = array();
+$emailAddressesArrayOld = array();
 while ($row = $result->fetch_object())
 {
 	$emailAddressesArrayOld[] = $row['email'];
 }
 $result->free();
-$emailAddressArrayNew = preg_split("/[\s]+/", $emailAddresses);
+if (isset($emailAddresses))
+	$emailAddressesArrayNew = preg_split("/[\s]+/", $emailAddresses);
 
-$emailsToAdd = array_diff($emailAddressesArrayNew, $emailAddressArrayOld);
+$emailsToAdd = array_diff($emailAddressesArrayNew, $emailAddressesArrayOld);
 $emailsToRemove = array_diff($emailAddressesArrayOld, $emailAddressesArrayNew);
 
-$query = "update events set (event_title, event_start, event_end, event_description) = " .
-		 "('$eventTitle', '$startTimeString', '$endTimeString', '$eventDescription') ".
-		 "where event_id = $eventID";
+$eventTitle = $mysqli->real_escape_string($eventTitle);
+$startTimeString = $mysqli->real_escape_string($startTimeString);
+$endTimeString = $mysqli->real_escape_string($endTimeString);
+$eventDescription = $mysqli->real_escape_string($eventDescription);
+$numberOfSpots = $mysqli->real_escape_string($numberOfSpots);
+
+$query = "update events set event_title = '$eventTitle', event_start = '$startTimeString', event_end = '$endTimeString', ".
+		 "event_description = '$eventDescription', number_of_spots = '$numberOfSpots' ".
+		 "where id = $eventID";
 $mysqli->query($query);
+
+print "\n" . $query . "\n";
 
 foreach ($emailsToRemove as $email)
 {
