@@ -1,7 +1,5 @@
 <?php
 
-require_once("startSessionOrError.php");
-
 $numberOfResultsPerPage = 5;
 
 if (!isset($_GET['page']))
@@ -23,7 +21,7 @@ $offset = ($page - 1) * 5;
 $result = $mysqli->query("select * from events order by event_start desc limit $offset, $numberOfResultsPerPage");
 if ($result->num_rows == 0 && $page != 1)
 {
-	header("Location: /viewEvents.php");
+	header("Location: /index.php");
 	return;
 }
 
@@ -50,8 +48,7 @@ while ($row = $result->fetch_assoc())
 			"<td><h4>$eventTitle</h4></td>".
 			"<td>$dateString</td>".
 			"<td>$eventDescription</td>".
-			"<td class=\"td-center\">$numberOfSpots</td>".
-			"<td class=\"SpotsLeft td-center\">$numberOfSpotsLeft</td>".
+			"<td class=\"SpotsLeft\">$numberOfSpotsLeft</td>".
 		"</tr>";
 }
 
@@ -117,62 +114,65 @@ function canGoForward()
 <style>
 body {background-color: #f5f5f5;}
 table#EventTable {width: 65em; margin: 0 auto;}
+table#EventTable tbody tr:hover {background-color: #e1f3ff !important;}
+table#EventTable tbody tr:nth-child(odd) {background-color: rgb(249, 249, 249);}
 th#TitleHeader {min-width: 10em;}
 th#DateHeader {min-width: 5em;}
 th#SpotsLeft {min-width: 5em;}
-div#EditDeleteButtons button {min-width: 5em;}
-div#EditDeleteButtons {display: none; position: absolute; width: 100%;}
-td.td-center {text-align: center;}
-table#EventTable tbody tr {height: 10em; overflow: scroll;}
-table#EventTable tbody td {vertical-align: middle;}
-p#BackForwardButtons {padding-top: 1em;}
-p.text-right {padding-right: 1em; padding-top: .5em;}
+td.SpotsLeft {text-align: center; vertical-align: middle; font-size: x-large;}
+p#SignUpP {padding-top: 1em; padding-bottom: .5em;}
+p#ClickOnEventP {padding-top: 1em; display: none;}
+p#ConfirmCancelP button {min-width: 5em;}
+p#ConfirmCancelP input {font-size: large; height: 2em;}
+h4 {padding-bottom: .74em;}
+div#CompleteSignUp {display: none;}
+.text-large {font-size: large;}
 </style>
 
 <script>
+var state = "initial";
 var page = 1;
-var timer;
-var selectedID;
-
-function removeButtons()
-{
-	$("#EditDeleteButtons").fadeOut("slow");
-}
 
 $(document).ready(function () {
-	$("tbody tr").mousemove(function() {
-		$("#EditDeleteButtons").stop(true, true).show();
-		//$("#EditDeleteButtons").fadeOut("fast");
-		selectedID = $(this).attr('id');
-		var y = $(this).offset().top;
-		var height = $(this).height();
-		var pheight = $("#EditDeleteButtons button").height();
-		var paddingTop = height / 2 - pheight;
-		$("#EditDeleteButtons").css("top", y).css("left", 0).css("height", height + "px");
-		$("#EditDeleteButtons p").css("padding-top", paddingTop + "px");
-		//$("#EditDeleteButtons").stop(true, true).show("slow");
-		//$("#EditDeleteButtons").fadeIn("fast");
-		clearTimeout(timer);
-		timer = setTimeout(removeButtons, 1500);
+	$("p#SignUpP button").click(function () {
+		$("p#SignUpP").hide("slow");
+		$("p#ClickOnEventP").show("slow");
+		$("html, body").animate({ scrollTop: 0 }, "slow");
+		state = "signUpButtonClicked";
 	});
 	
-	$("#EditDeleteButtons button").mouseover(function () {
-		clearTimeout(timer);
-		$("#EditDeleteButtons").stop(true, true).show();
-	});
-	
-	$("#EditDeleteButtons button").mouseout(function () {
-		timer = setTimeout(removeButtons, 1500);
-	});
-	
-	$("button.Edit").click(function () {
-		window.location = "/editEvent.php?id=" + selectedID;
-	});
-	
-	$("button.Delete").click(function () {
-		if (confirm("Please confirm that you would like to delete this entry.")) {
-			window.location = "/delete.php?id=" + selectedID;
+	$("table#EventTable tbody tr").click(function () {
+		if (state == "signUpButtonClicked") {
+			var id = $(this).attr('id');
+			var title = $(this).get(0).childNodes[0].childNodes[0].innerHTML;
+			var date = $(this).get(0).childNodes[1].innerHTML;
+			var spotsLeft = $(this).get(0).childNodes[3].innerHTML;
+			if (parseInt(spotsLeft) == 0) {
+				alert("This event already has enough volunteers.")
+				return;
+			}
+			$("input#EmailAddress").val("");
+			$("div#CompleteSignUp h4").get(0).innerHTML = title + ", " + date;
+			$("div#CompleteSignUp input#EventID").val(id);
+			$("p#ClickOnEventP").hide("slow");
+			$("div#CompleteSignUp").show("slow");
+			$("html, body").animate({ scrollTop: 0 }, "slow");
+			state = "eventSelected";
 		}
+	});
+	
+	$("button.Cancel").click(function () {
+		$("p#ClickOnEventP").hide("slow");
+		$("div#CompleteSignUp").hide("slow");
+		$("p#SignUpP").show("slow");
+		state = "initial";
+		$("html, body").animate({ scrollTop: 0 }, "slow");
+	});
+	
+	$("button#Confirm").click(function () {
+		var eventID = $("input#EventID").val();
+		var email = $("input#EmailAddress").val();
+		window.location = "/signup.php?EventID=" + eventID + "&EmailAddress=" + email;
 	});
 	
 	$("button#PreviousPage").click(function () {
@@ -183,44 +183,46 @@ $(document).ready(function () {
 		window.location = window.location.pathname + "?page=" + (page + 1);
 	});
 	
-	$("button#AddNewEvent").click(function () {
-		window.location = "/addEvent.php";
-	});
-	
-	
 	
 });
 </script>
 
 </head>
 <body>
-<?php displayUsername(); ?>
-<h1 class="text-center">Current Events</h1>
+<h1 class="text-center">Events at the Bulldog Pantry</h1>
 
-<p class="text-center">
-	<button class="btn btn-primary" id="AddNewEvent"><i class="icon-plus icon-white"></i> Add New Event</button>
+
+
+<p class="text-center" id="ClickOnEventP">
+	<button class="btn btn-primary btn-large">Please click on the event,</button>
+	<button class="btn btn-danger btn-large Cancel">or Cancel</button>
 </p>
 
-<table class="table table-striped" id="EventTable">
+<div id="CompleteSignUp">
+<h3 class="text-center">You are signing up for:</h3>
+<h4 class="text-center">Lorem Ipsum Dolor, Saturday, May 5, 2013, 11:00 a.m. to 12:00 p.m.</h4>
+<p class="text-center" id="ConfirmCancelP">
+	<input type="text" class="input-xlarge search-query text-center" placeholder="Email Address" id="EmailAddress">
+	<button class="btn btn-success btn-large" id="Confirm">Confirm</button>
+	<button class="btn btn-danger btn-large Cancel">Cancel</button>
+</p>
+<input type="hidden" id="EventID">
+</div>
+
+
+<table class="table" id="EventTable">
 	<thead>
-		<tr>
-			<th id="TitleHeader">Event Title</th><th id="DateHeader">Date</th><th>Event Description</th>
-			<th>Spots</th><th id="SpotsLeft">Spots Left</th>
-		</tr>
+		<th id="TitleHeader">Event Title</th><th id="DateHeader">Date</th><th>Event Description</th>
+		<th id="SpotsLeft">Spots Left</th>
 	</thead>
 	<tbody>
 		<?php foreach($html as $row) print $row . "\n"; ?>
 	</tbody>
 </table>
 
-<div id="EditDeleteButtons">
-<p class="text-center">
-	<button class="btn btn-info btn-large Edit">Edit</button>
-	<button class="btn btn-danger btn-large Delete">Delete</button>
-</p>
-</div>
+<p class="text-center" id="SignUpP"><button class="btn btn-primary btn-large">Sign up for one of these events</button></p>
 
-<p class="text-center" id="BackForwardButtons">
+<p class="text-center">
 <button class="btn btn-large" id="PreviousPage"<?php canGoBack(); ?>><i class="icon-arrow-left text-large"></i></button>
 <button class="btn btn-large" id="NextPage"<?php canGoForward(); ?>><i class="icon-arrow-right text-large"></i></button>
 </p>

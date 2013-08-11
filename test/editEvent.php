@@ -114,7 +114,7 @@ function printVolunteerEmails()
 	global $volunteerEmails;
 	foreach ($volunteerEmails as $email)
 	{
-		print $email . '\n';
+		print $email . "\n";
 	}
 }
 

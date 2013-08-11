@@ -68,7 +68,7 @@ $mysqli->select_db("BulldogPantry");
 $result = $mysqli->query("select email from volunteers where event_id = $eventID");
 $emailAddressesArrayNew = array();
 $emailAddressesArrayOld = array();
-while ($row = $result->fetch_object())
+while ($row = $result->fetch_assoc())
 {
 	$emailAddressesArrayOld[] = $row['email'];
 }
@@ -94,18 +94,23 @@ print "\n" . $query . "\n";
 
 foreach ($emailsToRemove as $email)
 {
-	$query = "delete from volunteers where event_id = $eventID and email = '$email'";
-	$mysqli->query($query);
+	if (strlen($email) > 0)
+	{
+		$query = "delete from volunteers where event_id = $eventID and email = '$email'";
+		$mysqli->query($query);
+	}
 }
 
 foreach ($emailsToAdd as $email)
 {
-	$cancelCode = generateCancelCode(11);
-	$query = "insert into volunteers (email, event_id, cancel_code) values " .
-			 "('$email', $eventID, $cancelCode)";
-	$mysqli->query($query);
-	// send an email to the new volunteer
-	
+	if (strlen($email) > 0)
+	{
+		$cancelCode = generateCancelCode(11);
+		$query = "insert into volunteers (email, event_id, cancel_code) values " .
+				 "('$email', $eventID, $cancelCode)";
+		$mysqli->query($query);
+		// send an email to the new volunteer
+	}
 }
 
 print "Success";
