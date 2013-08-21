@@ -18,7 +18,7 @@ if (isset($_SERVER['HTTP_REFERER']))
 }
 else
 {
-	header("Location: /viewEvents.php");
+	header("Location: /admin/viewEvents.php");
 }
 
 

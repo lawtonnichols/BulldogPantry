@@ -6,7 +6,7 @@ if (!isset($_SESSION['username']))
 {
 	// redirect to the login page if the user is not authenticated
 	session_destroy();
-	header("Location: /login.php");
+	header("Location: /admin/login.php");
 }
 
 $username = $_SESSION['username'];

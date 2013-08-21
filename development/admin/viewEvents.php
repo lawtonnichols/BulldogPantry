@@ -21,9 +21,9 @@ $numberOfRecords = $numberOfRecords->fetch_assoc()['count(*)'];
 
 $offset = ($page - 1) * 5;
 $result = $mysqli->query("select * from events order by event_start desc limit $offset, $numberOfResultsPerPage");
-if ($result == false || $result->num_rows == 0 && $page != 1)
+if ($result == false || ($result->num_rows == 0 && $page != 1))
 {
-	header("Location: /viewEvents.php");
+	header("Location: /admin/viewEvents.php");
 	return;
 }
 
@@ -166,12 +166,12 @@ $(document).ready(function () {
 	});
 	
 	$("button.Edit").click(function () {
-		window.location = "/editEvent.php?id=" + selectedID;
+		window.location = "/admin/editEvent.php?id=" + selectedID;
 	});
 	
 	$("button.Delete").click(function () {
 		if (confirm("Please confirm that you would like to delete this entry.")) {
-			window.location = "/delete.php?id=" + selectedID;
+			window.location = "/admin/delete.php?id=" + selectedID;
 		}
 	});
 	
@@ -184,7 +184,7 @@ $(document).ready(function () {
 	});
 	
 	$("button#AddNewEvent").click(function () {
-		window.location = "/addEvent.php";
+		window.location = "/admin/addEvent.php";
 	});
 	
 	

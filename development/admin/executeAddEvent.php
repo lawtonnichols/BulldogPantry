@@ -84,6 +84,6 @@ $query = "insert into events (event_title, event_start, event_end, event_descrip
 		 "('$eventTitle', '$startTimeString', '$endTimeString', '$eventDescription', $numberOfSpots)";
 
 $mysqli->query($query);
-header("Location: /viewEvents.php");
+header("Location: /admin/viewEvents.php");
 
 ?>

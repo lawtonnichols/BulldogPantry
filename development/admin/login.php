@@ -43,7 +43,7 @@ if (isset($_POST['username']) || isset($_POST['password']))
 		$_SESSION['username'] = $username;
 		
 		// send the user to the admin index
-		header("Location: adminIndex.php");
+		header("Location: /admin/adminIndex.php");
 	}
 }
 

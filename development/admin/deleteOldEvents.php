@@ -25,7 +25,7 @@ if (isset($_POST['Date']) && strlen($_POST['Date']) > 0)
 
 	$result = $mysqli->query("delete from events where event_start <= '$formattedDate'");
 	
-	header("Location: adminIndex.php");
+	header("Location: /admin/");
 }
 
 ?>

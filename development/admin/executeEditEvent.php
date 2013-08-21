@@ -112,6 +112,6 @@ foreach ($emailsToAdd as $email)
 	}
 }
 
-header("Location: /viewEvents.php");
+header("Location: /admin/viewEvents.php");
 
 ?>

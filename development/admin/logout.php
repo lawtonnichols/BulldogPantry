@@ -6,6 +6,6 @@ unset($_SESSION['username']);
 
 session_destroy();
 
-header("Location: login.php");
+header("Location: /admin/login.php");
 
 ?>
