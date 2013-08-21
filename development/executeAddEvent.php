@@ -2,7 +2,6 @@
 
 require_once("startSessionOrError.php");
 
-error_reporting(E_ALL);
 $error = false;	
 
 if (isset($_POST['EventTitle']))
@@ -42,17 +41,19 @@ if (isset($_POST['EventDescription']))
 else
 	$eventDescription = "";
 if (isset($_POST['NumberOfSpots']))
-	$numberOfSpots = $_POST['NumberOfSpots'];
+	$numberOfSpots = intval($_POST['NumberOfSpots']);
 else
 	$error = true;
+if ($numberOfSpots < 0)
+	$numberOfSpots = 0;
 
 if ($error)
 {
-	print "There was an error in your input. Please press back and try entering it again.";
+	header("Location: /error.html");
 	return;
 }
 
-// otherwise, add the new information to the database
+// otherwise (if there wasn't an error), add the new information to the database
 $date = date_create_from_format('m/d/Y', $date);
 $startTime = clone $date;
 if ($startTimeHours == 12 && $startTimeAmPm == "am")
@@ -68,7 +69,6 @@ if ($endTimeAmPm == "pm" && $endTimeHours != 12)
 	$endTime->modify("+12 hours");
 	
 $startTimeString = $startTime->format("Y-m-d H:i:s");
-print $startTimeString . "\n";
 $endTimeString = $endTime->format("Y-m-d H:i:s");
 
 $mysqli = new mysqli("localhost", "root", "root");
@@ -84,6 +84,6 @@ $query = "insert into events (event_title, event_start, event_end, event_descrip
 		 "('$eventTitle', '$startTimeString', '$endTimeString', '$eventDescription', $numberOfSpots)";
 
 $mysqli->query($query);
-print "Success";
+header("Location: /viewEvents.php");
 
 ?>

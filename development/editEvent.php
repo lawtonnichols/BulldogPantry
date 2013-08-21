@@ -26,11 +26,15 @@ $eventEnd = date_parse($row['event_end']);
 $eventDescription = $row['event_description'];
 $numberOfSpots = $row['number_of_spots'];
 $volunteerEmails = array();
+$emailAllVolunteersString = "";
 
 $result = $mysqli->query("select email from volunteers where event_id = " . $eventID);
 while ($row = $result->fetch_assoc())
 {
 	$volunteerEmails[] = $row['email'];
+	if (strlen($emailAllVolunteersString) > 0)
+		$emailAllVolunteersString .= ";\n";
+	$emailAllVolunteersString .= $row['email'];
 }
 
 function selectStartTimeHour($hour)
@@ -195,6 +199,15 @@ $(document).ready(function () {
 	$("#CancelButton").click(function() {
 		window.history.go(-1);
 	});
+	
+	$("#SendEmailButton").click(function() {
+		$("#SendEmailPopup").show("slow");
+	});
+	
+	$("#CloseSendEmailPopup").click(function () {
+		$("#SendEmailPopup").hide("slow");
+		return false;
+	});
 });
 </script>
 
@@ -208,6 +221,10 @@ p#EditCancelButtons {padding-top: 1em;}
 td#icontd {padding-right: .5em;}
 textarea#EmailAddresses {font-family: monospace; font-size: larger; width: 26em;}
 p.text-right {padding-right: 1em; padding-top: .5em;}
+#SendEmailPopup {position: fixed; width: 100%; top: 10%; display: none;}
+#SendEmailPopupContainer {position: relative; margin: 0 auto; width: 30em; background-color: #fafafa; padding: 3em; border: thin solid #cccccc; border-radius: .5em;}
+a#CloseSendEmailPopup {position: absolute; top: 0; right: 0; padding: .5em; font-size: 2em; color: black;}
+
 </style>
 </head>
 <body>
@@ -321,6 +338,13 @@ p.text-right {padding-right: 1em; padding-top: .5em;}
 		<button class="btn btn-large btn-danger Cancel" id="CancelButton" onclick="return false;">Cancel</button>
 	</p>
 </form>
+</div>
+<div id="SendEmailPopup">
+	<div id="SendEmailPopupContainer">
+		<a id="CloseSendEmailPopup" href="#">×</a>
+		<p>Below are the addresses of the volunteers in a format suitable for any email application. Please copy the entire text below and paste it all into the "To" field of a new email message.</p>
+		<textarea id="EmailAddressesToCopy"><?php print $emailAllVolunteersString; ?></textarea>
+	</div>
 </div>
 </body>
 </html>

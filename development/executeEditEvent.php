@@ -1,4 +1,5 @@
 <?php
+
 require_once("startSessionOrError.php");
 
 $error = false;
@@ -34,7 +35,9 @@ $endTimeHours = getPostVariable('EndTimeHours');
 $endTimeMinutes = getPostVariable('EndTimeMinutes');
 $endTimeAmPm = getPostVariable('EndTimeAmPm');
 $eventDescription = getPostVariable('EventDescription', false);
-$numberOfSpots = getPostVariable('NumberOfSpots');
+$numberOfSpots = intval(getPostVariable('NumberOfSpots'));
+if ($numberOfSpots < 0)
+	$numberOfSpots = 0;
 $emailAddresses = getPostVariable('EmailAddresses', false);
 
 if ($error)
@@ -59,7 +62,6 @@ if ($endTimeAmPm == "pm" && $endTimeHours != 12)
 	$endTime->modify("+12 hours");
 	
 $startTimeString = $startTime->format("Y-m-d H:i:s");
-print $startTimeString . "\n";
 $endTimeString = $endTime->format("Y-m-d H:i:s");
 
 $mysqli = new mysqli("localhost", "root", "root");
@@ -90,8 +92,6 @@ $query = "update events set event_title = '$eventTitle', event_start = '$startTi
 		 "where id = $eventID";
 $mysqli->query($query);
 
-print "\n" . $query . "\n";
-
 foreach ($emailsToRemove as $email)
 {
 	if (strlen($email) > 0)
@@ -109,10 +109,9 @@ foreach ($emailsToAdd as $email)
 		$query = "insert into volunteers (email, event_id, cancel_code) values " .
 				 "('$email', $eventID, $cancelCode)";
 		$mysqli->query($query);
-		// send an email to the new volunteer
 	}
 }
 
-print "Success";
+header("Location: /viewEvents.php");
 
 ?>

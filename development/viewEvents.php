@@ -10,7 +10,7 @@ if (!isset($_GET['page']))
 }
 else
 {
-	$page = $_GET['page'];
+	$page = intval($_GET['page']);
 }
 
 $mysqli = new mysqli("localhost", "root", "root");
@@ -21,7 +21,7 @@ $numberOfRecords = $numberOfRecords->fetch_assoc()['count(*)'];
 
 $offset = ($page - 1) * 5;
 $result = $mysqli->query("select * from events order by event_start desc limit $offset, $numberOfResultsPerPage");
-if ($result->num_rows == 0 && $page != 1)
+if ($result == false || $result->num_rows == 0 && $page != 1)
 {
 	header("Location: /viewEvents.php");
 	return;
