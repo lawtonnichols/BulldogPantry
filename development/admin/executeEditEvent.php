@@ -28,6 +28,9 @@ function generateCancelCode($length)
 $eventID = getPostVariable('EventID');
 $eventTitle = getPostVariable('EventTitle');
 $date = getPostVariable('Date');
+$date = date_create_from_format('m/d/Y', $date);
+if ($date == false)
+	$error = true;
 $startTimeHours = getPostVariable('StartTimeHours');
 $startTimeMinutes = getPostVariable('StartTimeMinutes');
 $startTimeAmPm = getPostVariable('StartTimeAmPm');
@@ -47,7 +50,6 @@ if ($error)
 }
 
 // otherwise, add the new information to the database
-$date = date_create_from_format('m/d/Y', $date);
 $startTime = clone $date;
 if ($startTimeHours == 12 && $startTimeAmPm == "am")
 	$startTimeHours = 0;
@@ -107,7 +109,7 @@ foreach ($emailsToAdd as $email)
 	{
 		$cancelCode = generateCancelCode(11);
 		$query = "insert into volunteers (email, event_id, cancel_code) values " .
-				 "('$email', $eventID, $cancelCode)";
+				 "('$email', $eventID, '$cancelCode')";
 		$mysqli->query($query);
 	}
 }

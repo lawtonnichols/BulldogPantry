@@ -14,7 +14,7 @@ $username = $_SESSION['username'];
 function displayUsername()
 {
 	global $username;
-	print "<p class='text-right'>You are logged in as <strong>$username</strong>. <a href='adminIndex.php'>Home</a> | <a href='logout.php'>Logout</a></p>";
+	print "<p class='text-right'>You are logged in as <strong>$username</strong>. <a href='index.php'>Home</a> | <a href='logout.php'>Logout</a></p>";
 }
 
 ?>

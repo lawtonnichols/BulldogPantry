@@ -35,12 +35,9 @@ function sha512PasswordHash($password, $salt)
 function createAdminUser($mysqli)
 {
 	$salt = generateSalt(11);
-	print $salt . "\n";
 	$passwordHash = sha512PasswordHash("BulldogPantry!", $salt);
-	print $passwordHash . "\n";
 	$query = "insert into users (username, password_hash, salt) " .
 			 "values ('BulldogPantryAdmin', '$passwordHash', '$salt')";
-	print $query;
 	$mysqli->query($query);
 }
 
@@ -89,4 +86,6 @@ $result = $mysqli->multi_query($query); // create the database and all the table
 while ($mysqli->more_results() && $mysqli->next_result());
 
 createAdminUser($mysqli);
+
+header("Location: /admin/databaseReset.html");
 ?>

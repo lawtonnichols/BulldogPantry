@@ -12,6 +12,9 @@ if (isset($_POST['Date']))
 	$date = $_POST['Date'];
 else
 	$error = true;	
+$date = date_create_from_format('m/d/Y', $date);
+if ($date == false)
+	$error = true;
 if (isset($_POST['StartTimeHours']))
 	$startTimeHours = $_POST['StartTimeHours'];
 else
@@ -54,7 +57,6 @@ if ($error)
 }
 
 // otherwise (if there wasn't an error), add the new information to the database
-$date = date_create_from_format('m/d/Y', $date);
 $startTime = clone $date;
 if ($startTimeHours == 12 && $startTimeAmPm == "am")
 	$startTimeHours = 0;

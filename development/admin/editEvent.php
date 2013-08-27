@@ -3,7 +3,7 @@ require_once("startSessionOrError.php");
 
 if (!isset($_GET['id']))
 {
-	header("Location: /404.html");
+	header("Location: /error.html");
 	return;
 }
 
@@ -15,7 +15,7 @@ $mysqli->select_db("BulldogPantry");
 $result = $mysqli->query("select * from events where id = " . $eventID);
 if ($result->num_rows == 0)
 {
-	header("Location: /404.html");
+	header("Location: /error.html");
 	return;
 }
 
