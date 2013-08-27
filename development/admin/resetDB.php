@@ -1,5 +1,11 @@
 <?php
-require_once("startSessionOrError.php");
+
+$mysqli = new mysqli("localhost", "root", "root");
+
+if (doesTheDatabaseExist($mysqli))
+	require_once("startSessionOrError.php");
+// if the database doesn't exist, then we should be allowed to reset it
+// in order to create it for the first time
 
 error_reporting(E_ALL);
 
@@ -40,8 +46,6 @@ function createAdminUser($mysqli)
 			 "values ('BulldogPantryAdmin', '$passwordHash', '$salt')";
 	$mysqli->query($query);
 }
-
-$mysqli = new mysqli("localhost", "root", "root");
 
 if (doesTheDatabaseExist($mysqli))
 {

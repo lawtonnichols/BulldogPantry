@@ -1,5 +1,7 @@
 ## Redirect all traffic to this folder to HTTPS ##
 ## Taken from http://wiki.apache.org/httpd/RewriteHTTPToHTTPS ##
+## Configuration tutorial located at https://help.ubuntu.com/13.04/serverguide/httpd.html ##
+## Make sure to enabled mod_rewrite in ubuntu: sudo a2enmod rewrite ##
 
 RewriteEngine On
 # This will enable the Rewrite capabilities
@@ -7,7 +9,7 @@ RewriteEngine On
 RewriteCond %{HTTPS} !=on
 # This checks to make sure the connection is not already HTTPS
 
-RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+RewriteRule ^/?(.*) https://%{SERVER_NAME}/admin/$1 [R,L]
 # This rule will redirect users from their original location, to the same location but using HTTPS.
 # i.e.  http://www.example.com/foo/ to https://www.example.com/foo/
 # The leading slash is made optional so that this will work either in httpd.conf

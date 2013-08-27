@@ -35,11 +35,11 @@ if (isset($_POST['Date']) && strlen($_POST['Date']) > 0)
 <meta charset="utf8">
 <title>Delete Old Events</title>
 
-<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
-<link href="http://code.jquery.com/ui/jquery-ui-git.css" rel="stylesheet">
-<script src="http://code.jquery.com/ui/jquery-ui-git.js"></script>
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+<link href="//code.jquery.com/ui/jquery-ui-git.css" rel="stylesheet">
+<script src="//code.jquery.com/ui/jquery-ui-git.js"></script>
 
 <script>
 $(document).ready(function () {

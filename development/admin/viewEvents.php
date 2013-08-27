@@ -110,9 +110,9 @@ function canGoForward()
 <meta charset="utf8">
 <title>Events — The Bulldog Pantry</title>
 
-<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
 
 <style>
 body {background-color: #f5f5f5;}
