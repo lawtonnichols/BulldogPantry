@@ -1,5 +1,17 @@
 <?php
 
+session_start();
+
+if (isset($_SESSION['username']))
+{
+	// redirect away from the login page if the user is already authenticated
+	header("Location: /admin/");
+}
+else
+{
+	session_destroy();
+}
+
 function sha512PasswordHash($password, $salt)
 {
 	return hash("sha512", $password . $salt);

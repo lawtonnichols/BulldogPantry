@@ -12,6 +12,7 @@ $eventID = $_GET['id'];
 $mysqli = new mysqli("localhost", "root", "root");
 $mysqli->select_db("BulldogPantry");
 
+$eventID = $mysqli->real_escape_string($eventID);
 $result = $mysqli->query("select * from events where id = " . $eventID);
 if ($result->num_rows == 0)
 {

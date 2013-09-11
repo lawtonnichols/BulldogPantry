@@ -98,6 +98,7 @@ foreach ($emailsToRemove as $email)
 {
 	if (strlen($email) > 0)
 	{
+		$email = $mysqli->real_escape_string($email);
 		$query = "delete from volunteers where event_id = $eventID and email = '$email'";
 		$mysqli->query($query);
 	}
@@ -107,6 +108,7 @@ foreach ($emailsToAdd as $email)
 {
 	if (strlen($email) > 0)
 	{
+		$email = $mysqli->real_escape_string($email);
 		$cancelCode = generateCancelCode(11);
 		$query = "insert into volunteers (email, event_id, cancel_code) values " .
 				 "('$email', $eventID, '$cancelCode')";
