@@ -2,8 +2,13 @@
 
 $mysqli = new mysqli("localhost", "root", "root");
 
+$shouldLogOut = false;
+
 if (doesTheDatabaseExist($mysqli))
+{
 	require_once("startSessionOrError.php");
+	$shouldLogOut = true;
+}
 // if the database doesn't exist, then we should be allowed to reset it
 // in order to create it for the first time
 
@@ -70,6 +75,7 @@ $query = <<<END
 		event_start datetime not null,
 		event_end datetime not null,
 		event_description varchar(500),
+		event_location varchar(200),
 		number_of_spots int not null,
 		index(event_start)
 	);
@@ -77,6 +83,7 @@ $query = <<<END
 	create table volunteers (
 		id int not null auto_increment primary key,
 		email varchar(256) not null,
+		name varchar(100) not null,
 		event_id int not null,
 		cancel_code varchar(11) not null,
 		foreign key(event_id) references events(id) on delete cascade,
@@ -90,6 +97,12 @@ $result = $mysqli->multi_query($query); // create the database and all the table
 while ($mysqli->more_results() && $mysqli->next_result());
 
 createAdminUser($mysqli);
+
+if ($shouldLogOut)
+{
+	unset($_SESSION['username']);
+	session_destroy();
+}
 
 header("Location: /admin/databaseReset.html");
 ?>

@@ -1,0 +1,22 @@
+Name along with email address
+Show only current week
+Location to events
+Maybe a checkbox asking "Are you a Fresno State student?"
+
+Senior Project - Bulldog Pantry Event Management System		Fall 2013
+The Bulldog Pantry is a food pantry located across the street from Fresno State. Currently, a large email is sent out each week that contains volunteer opportunities at the Pantry, along with the number of spots available; this information becomes very outdated as the hours progress. To solve this and other issues, for my senior project I am creating a website in PHP along with a MySQL database that allows Bulldog Pantry administrators to add events. Volunteers will be able to sign up for them in real time, so they will always know exactly how many spots are open. In addition to benefiting volunteers, administrators will be able to keep track of the names and emails of volunteers more easily this way. Other features include email confirmation, one-click cancellation, and the ability for an administrator to manually add or remove volunteers.
+
+10 page report, double-spaced OR present to public
+	for paper, focus on stuff learned
+request a domain from IT department - helpdesk: need to submit work order
+google maps
+add to another event website
+doodle
+google calendar***? api, google+, maps too
+donation services
+invoice/receipt 
+submit work order to IT
+advertisement
+ajax
+
+http://i.imgur.com/TMPtUhu.png

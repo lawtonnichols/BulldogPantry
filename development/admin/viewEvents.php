@@ -35,6 +35,7 @@ while ($row = $result->fetch_assoc())
 	$eventEnd = getdate(strtotime($row['event_end']));
 	$eventDescription = $row['event_description'];
 	$numberOfSpots = $row['number_of_spots'];
+	$eventLocation = $row['event_location'];
 	$eventID = $row['id'];
 	
 	$volunteers = $mysqli->query("select count(*) from volunteers where event_id = $eventID");
@@ -49,6 +50,7 @@ while ($row = $result->fetch_assoc())
 		"<tr id=\"$eventID\">".
 			"<td><h4>$eventTitle</h4></td>".
 			"<td>$dateString</td>".
+			"<td>$eventLocation</td>".
 			"<td>$eventDescription</td>".
 			"<td class=\"td-center\">$numberOfSpots</td>".
 			"<td class=\"SpotsLeft td-center\">$numberOfSpotsLeft</td>".
@@ -204,8 +206,8 @@ $(document).ready(function () {
 <table class="table table-striped" id="EventTable">
 	<thead>
 		<tr>
-			<th id="TitleHeader">Event Title</th><th id="DateHeader">Date</th><th>Event Description</th>
-			<th>Spots</th><th id="SpotsLeft">Spots Left</th>
+			<th id="TitleHeader">Event Title</th><th id="DateHeader">Date</th><th>Location</th>
+			<th>Event Description</th><th>Spots</th><th id="SpotsLeft">Spots Left</th>
 		</tr>
 	</thead>
 	<tbody>

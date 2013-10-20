@@ -39,6 +39,10 @@ if (isset($_POST['EndTimeAmPm']))
 	$endTimeAmPm = $_POST['EndTimeAmPm'];
 else
 	$error = true;
+if (isset($_POST['EventLocation']))
+	$eventLocation = $_POST['EventLocation'];
+else
+	$error = true;
 if (isset($_POST['EventDescription']))
 	$eventDescription = $_POST['EventDescription'];
 else
@@ -81,9 +85,10 @@ $startTimeString = $mysqli->real_escape_string($startTimeString);
 $endTimeString = $mysqli->real_escape_string($endTimeString);
 $eventDescription = $mysqli->real_escape_string($eventDescription);
 $numberOfSpots = $mysqli->real_escape_string($numberOfSpots);
+$eventLocation = $mysqli->real_escape_string($eventLocation);
 
-$query = "insert into events (event_title, event_start, event_end, event_description, number_of_spots) values " .
-		 "('$eventTitle', '$startTimeString', '$endTimeString', '$eventDescription', $numberOfSpots)";
+$query = "insert into events (event_title, event_start, event_end, event_description, event_location, number_of_spots) values " .
+		 "('$eventTitle', '$startTimeString', '$endTimeString', '$eventDescription', '$eventLocation', $numberOfSpots)";
 
 $mysqli->query($query);
 header("Location: /admin/viewEvents.php");

@@ -25,12 +25,14 @@ function validate()
 	$("#DateError").html("");
 	$("#StartTimeError").html("");
 	$("#NumberOfSpotsError").html("");
+	$("#EventLocationError").html("");
 
 	var f = document.AddEventForm;
 
 	var eventTitle = f.EventTitle.value;
 	var date = f.Date.value;
 	var numberOfSpots = f.NumberOfSpots.value;
+	var eventLocation = f.EventLocation.value;
 	
 	if (eventTitle.length == 0)
 	{
@@ -40,6 +42,11 @@ function validate()
 	if (numberOfSpots.length == 0)
 	{
 		$("#NumberOfSpotsError").html("<strong>Please enter the number of spots.</strong>");
+		ret = false;
+	}
+	if (eventLocation.length == 0)
+	{
+		$("#EventLocationError").html("<strong>Please enter the location of the event.</strong>");
 		ret = false;
 	}
 	if (date.length == 0)
@@ -105,6 +112,11 @@ p.text-right {padding-right: 1em; padding-top: .5em;}
 		<label>Date:</label>
 		<label id="DateError" class="text-error"></label> 
 		<input type="text" id="datepicker" name="Date">
+	</p>
+	<p>
+		<label>Location:</label>
+		<label id="EventLocationError" class="text-error"></label> 
+		<input type="text" id="datepicker" name="EventLocation">
 	</p>
 	<p>
 		<label>Start Time:</label>

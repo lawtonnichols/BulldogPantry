@@ -41,7 +41,7 @@ $eventDescription = getPostVariable('EventDescription', false);
 $numberOfSpots = intval(getPostVariable('NumberOfSpots'));
 if ($numberOfSpots < 0)
 	$numberOfSpots = 0;
-$emailAddresses = getPostVariable('EmailAddresses', false);
+$eventLocation = getPostVariable('EventLocation');
 
 if ($error)
 {
@@ -69,7 +69,7 @@ $endTimeString = $endTime->format("Y-m-d H:i:s");
 $mysqli = new mysqli("localhost", "root", "root");
 $mysqli->select_db("BulldogPantry");
 
-$result = $mysqli->query("select email from volunteers where event_id = $eventID");
+/*$result = $mysqli->query("select email from volunteers where event_id = $eventID");
 $emailAddressesArrayNew = array();
 $emailAddressesArrayOld = array();
 while ($row = $result->fetch_assoc())
@@ -81,7 +81,7 @@ if (isset($emailAddresses))
 	$emailAddressesArrayNew = preg_split("/[\s]+/", $emailAddresses);
 
 $emailsToAdd = array_diff($emailAddressesArrayNew, $emailAddressesArrayOld);
-$emailsToRemove = array_diff($emailAddressesArrayOld, $emailAddressesArrayNew);
+$emailsToRemove = array_diff($emailAddressesArrayOld, $emailAddressesArrayNew);*/
 
 $eventTitle = $mysqli->real_escape_string($eventTitle);
 $startTimeString = $mysqli->real_escape_string($startTimeString);
@@ -90,11 +90,11 @@ $eventDescription = $mysqli->real_escape_string($eventDescription);
 $numberOfSpots = $mysqli->real_escape_string($numberOfSpots);
 
 $query = "update events set event_title = '$eventTitle', event_start = '$startTimeString', event_end = '$endTimeString', ".
-		 "event_description = '$eventDescription', number_of_spots = '$numberOfSpots' ".
+		 "event_description = '$eventDescription', number_of_spots = '$numberOfSpots', event_location = '$eventLocation' ".
 		 "where id = $eventID";
 $mysqli->query($query);
 
-foreach ($emailsToRemove as $email)
+/*foreach ($emailsToRemove as $email)
 {
 	if (strlen($email) > 0)
 	{
@@ -114,7 +114,7 @@ foreach ($emailsToAdd as $email)
 				 "('$email', $eventID, '$cancelCode')";
 		$mysqli->query($query);
 	}
-}
+}*/
 
 header("Location: /admin/viewEvents.php");
 

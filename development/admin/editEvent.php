@@ -24,15 +24,20 @@ $row = $result->fetch_assoc();
 $eventTitle = $row['event_title'];
 $eventStart = date_parse($row['event_start']);
 $eventEnd = date_parse($row['event_end']);
+$eventLocation = $row['event_location'];
 $eventDescription = $row['event_description'];
 $numberOfSpots = $row['number_of_spots'];
 $volunteerEmails = array();
+$volunteerNames = array();
+$volunteerIDs = array();
 $emailAllVolunteersString = "";
 
-$result = $mysqli->query("select email from volunteers where event_id = " . $eventID);
+$result = $mysqli->query("select * from volunteers where event_id = " . $eventID);
 while ($row = $result->fetch_assoc())
 {
 	$volunteerEmails[] = $row['email'];
+	$volunteerNames[] = $row['name'];
+	$volunteerIDs[] = $row['id'];
 	if (strlen($emailAllVolunteersString) > 0)
 		$emailAllVolunteersString .= ";\n";
 	$emailAllVolunteersString .= $row['email'];
@@ -117,10 +122,19 @@ function selectEndTimeAmPm($amOrPm)
 function printVolunteerEmails()
 {
 	global $volunteerEmails;
-	foreach ($volunteerEmails as $email)
+	global $volunteerNames;
+	global $volunteerIDs;
+	$output = "";
+	for ($i = 0; $i < sizeof($volunteerEmails); $i++)
 	{
-		print $email . "\n";
+		$name = $volunteerNames[$i];
+		$email = $volunteerEmails[$i];
+		$id = "v" . $volunteerIDs[$i];
+		$output .= "<tr id='$id'>";
+		$output .= "<td>$name</td><td>$email</td>";
+		$output .= "</tr>";
 	}
+	print $output;
 }
 
 ?>
@@ -152,6 +166,7 @@ function validate()
 	var eventTitle = f.EventTitle.value;
 	var date = f.Date.value;
 	var numberOfSpots = f.NumberOfSpots.value;
+	var eventLocation = f.EventLocation.value;
 	
 	if (eventTitle.length == 0)
 	{
@@ -161,6 +176,11 @@ function validate()
 	if (numberOfSpots.length == 0)
 	{
 		$("#NumberOfSpotsError").html("<strong>Please enter the number of spots.</strong>");
+		ret = false;
+	}
+	if (eventLocation.length == 0)
+	{
+		$("#EventLocationError").html("<strong>Please enter the location of the event.</strong>");
 		ret = false;
 	}
 	if (date.length == 0)
@@ -189,6 +209,9 @@ function validate()
 	return ret;
 }
 
+// state = editing, removing, or null
+var state = null;
+
 $(document).ready(function () {
 	$("#datepicker").datepicker();
 	
@@ -209,6 +232,155 @@ $(document).ready(function () {
 		$("#SendEmailPopup").hide("slow");
 		return false;
 	});
+	
+	$("#AddVolunteerButton").click(function () {
+		$("#AddVolunteerPopup").show("slow");
+	});
+	
+	$("#CloseAddVolunteerPopup").click(function () {
+		$("#AddVolunteerPopup").hide("slow");
+		return false;
+	});
+	
+	$("#CloseEditVolunteerPopup").click(function () {
+		$("#EditVolunteerPopup").hide("slow");
+		return false;
+	});
+	
+	$("#EditVolunteerButton").click(function () {
+		state = "editing";
+		$("#SelectVolunteerButton").html("Click on the Volunteer to Edit");
+		$("#SelectVolunteerButton").show("fast");
+		$("#CancelSelectVolunteerButton").show("fast");
+	});
+	
+	$("#EditVolunteerSubmitButton").click(function () {
+		var id = document.forms.EditVolunteer.id.value;
+		var name = document.forms.EditVolunteer.Name.value;
+		var email = document.forms.EditVolunteer.Email.value;
+		var d = {"id": id, "name": name, "email": email};
+		var jqxhr = $.ajax("ajaxEditVolunteer.php",
+		  		{
+			    	data: d,
+					type: "POST",
+					dataType: "json"
+				}
+				);
+				
+		jqxhr.done(function (data, textStatus, jqXHR) {
+			// add to table of volunteers
+			if (data.success == false)
+			{
+				alert("There was an error editing the volunteer; please try again.");
+			}
+			else
+			{
+				$("#v" + id).remove();
+				document.getElementById("VolunteerTableBody").innerHTML += "<tr id='v" + id + "'><td>" + name + "</td><td>" + email + "</td></tr>";
+			}
+		});
+		
+		jqxhr.fail(function () {
+			alert("There was an error editing the volunteer; please try again.");
+		});
+		$("#EditVolunteerPopup").hide("slow");
+		return false;
+	});
+	
+	$("#RemoveVolunteerButton").click(function () {
+		state = "removing";
+		$("#SelectVolunteerButton").html("Click on the Volunteer to Remove");
+		$("#SelectVolunteerButton").show("fast");
+		$("#CancelSelectVolunteerButton").show("fast");
+	});
+	
+	$("#CancelSelectVolunteerButton").click(function () {
+		state = null;
+		$("#SelectVolunteerButton").hide("fast");
+		$("#CancelSelectVolunteerButton").hide("fast");
+	});
+	
+	$("#VolunteerTable").on("click", "tr", function() {
+		//alert($(this).get(0).id);
+		//alert(state);
+		if (state == "removing")
+		{
+			var id = $(this).get(0).id.substr(1);
+			var d = {"id": id};
+			var jqxhr = $.ajax("ajaxRemoveVolunteer.php",
+			  		{
+				    	data: d,
+						type: "POST",
+						dataType: "json"
+					}
+					);
+					
+			jqxhr.done(function (data, textStatus, jqXHR) {
+				// add to table of volunteers
+				if (data.success == false)
+				{
+					alert("There was an error removing the volunteer; please try again.");
+				}
+				else
+				{
+					$("#v" + id).remove();
+				}
+			});
+		
+			jqxhr.fail(function () {
+				alert("There was an error removing the volunteer; please try again.");
+			});
+			
+			state = null;
+			$("#SelectVolunteerButton").hide("fast");
+			$("#CancelSelectVolunteerButton").hide("fast");
+		}
+		else if (state == "editing")
+		{
+			var id = $(this).get(0).id.substr(1);
+			var name = $(this).get(0).childNodes[0].innerHTML;
+			var email = $(this).get(0).childNodes[1].innerHTML;
+			document.forms.EditVolunteer.id.value = id;
+			document.forms.EditVolunteer.Name.value = name;
+			document.forms.EditVolunteer.Email.value = email;
+			$("#EditVolunteerPopup").show("slow");
+			state = null;
+			$("#SelectVolunteerButton").hide("fast");
+			$("#CancelSelectVolunteerButton").hide("fast");
+		}
+	});
+	
+	$("#AddVolunteerSubmitButton").click(function () {
+		var name = document.forms.AddVolunteer.Name.value;
+		var email = document.forms.AddVolunteer.Email.value;
+		var d = {"name": name, "email": email, "event": "<?php print $eventID; ?>"};
+		var jqxhr = $.ajax("ajaxAddVolunteer.php",
+			  		{
+				    	data: d,
+						type: "POST",
+						dataType: "json"
+					}
+					);
+					
+		jqxhr.done(function (data, textStatus, jqXHR) {
+			// add to table of volunteers
+			if (data.success == false)
+			{
+				alert("There was an error adding the volunteer; please try again.");
+			}
+			else
+			{
+				var id = data.id;
+				document.getElementById("VolunteerTableBody").innerHTML += "<tr id='v" + id + "'><td>" + name + "</td><td>" + email + "</td></tr>";
+			}
+			$("#AddVolunteerPopup").hide("slow");
+		});
+		
+		jqxhr.fail(function () {
+			alert("There was an error adding the volunteer; please try again.");
+			$("#AddVolunteerPopup").hide("slow");
+		});
+	});
 });
 </script>
 
@@ -226,6 +398,14 @@ p.text-right {padding-right: 1em; padding-top: .5em;}
 #SendEmailPopupContainer {position: relative; margin: 0 auto; width: 30em; background-color: #fafafa; padding: 3em; border: thin solid #cccccc; border-radius: .5em;}
 a#CloseSendEmailPopup {position: absolute; top: 0; right: 0; padding: .5em; font-size: 2em; color: black;}
 
+#AddVolunteerPopup, #EditVolunteerPopup {position: fixed; width: 100%; top: 10%; display: none;}
+#AddVolunteerPopupContainer, #EditVolunteerPopupContainer {position: relative; margin: 0 auto; width: 30em; background-color: #fafafa; padding: 3em; border: thin solid #cccccc; border-radius: .5em;}
+a#CloseAddVolunteerPopup, a#CloseEditVolunteerPopup {position: absolute; top: 0; right: 0; padding: .5em; font-size: 2em; color: black;}
+#AddVolunteerPopup label, #EditVolunteerPopup label {font-size: 1.5em;}
+table#VolunteerTable tbody tr:nth-child(odd) {background-color: rgb(249, 249, 249);}
+table#VolunteerTable tbody tr:hover {background: #e1f3ff;}
+#SelectVolunteerButton {margin-right: .02em;}
+#SelectVolunteerButton, #CancelSelectVolunteerButton {display: none;}
 </style>
 </head>
 <body>
@@ -243,6 +423,11 @@ a#CloseSendEmailPopup {position: absolute; top: 0; right: 0; padding: .5em; font
 		<label>Date:</label> 
 		<label id="DateError" class="text-error"></label>
 		<input type="text" id="datepicker" name="Date" value="<?php print $eventStart['month'].'/'.$eventStart['day'].'/'.$eventStart['year']; ?>">
+	</p>
+	<p>
+		<label>Location:</label>
+		<label id="EventLocationError" class="text-error"></label>
+		<input type="text" name="EventLocation" value="<?php print $eventLocation; ?>">
 	</p>
 	<p>
 		<label>Start Time:</label>
@@ -323,12 +508,23 @@ a#CloseSendEmailPopup {position: absolute; top: 0; right: 0; padding: .5em; font
 		<input type="text" name="NumberOfSpots" value="<?php print $numberOfSpots; ?>">
 	</p>
 	<p>Spots Remaining: <?php print $numberOfSpots - count($volunteerEmails); ?></p>
-	<p>Email Addresses of Volunteers for this Event:
-<textarea name="EmailAddresses" id="EmailAddresses"><?php printVolunteerEmails(); ?></textarea>
-	</p>
-	<table><tr valign="top"><td id="icontd"><i class="icon-star"></i></td>
+	<p>Names and Email Addresses of Volunteers for this Event:</p>
+		<p class="text-center">
+			<button class="btn btn-primary" onclick="return false;" id="SelectVolunteerButton">Select the Volunteer to Edit</button>
+			<button class="btn btn-danger" onclick="return false;" id="CancelSelectVolunteerButton">or Cancel</button>
+		</p>
+		<table id="VolunteerTable" class="table">
+			<thead><tr><th>Name</th><th>Email</th></tr></thead>
+			<tbody id="VolunteerTableBody"><?php printVolunteerEmails(); ?><tbody>
+		</table>
+		<p class="text-center">
+			<button id="AddVolunteerButton" class="btn btn-success" onclick="return false;">Add a Volunteer</button>
+			<button id="EditVolunteerButton" class="btn btn-warning" onclick="return false;">Edit a Volunteer</button>
+			<button id="RemoveVolunteerButton" class="btn btn-danger" onclick="return false;">Remove a Volunteer</button>
+		</p>
+	<!--<table><tr valign="top"><td id="icontd"><i class="icon-star"></i></td>
 		<td><p class="muted">To manually add or remove a volunteer, add an email to a new line, or remove an email from an existing one.</p></td>
-	</tr></table>
+	</tr></table>-->
 	<p class="text-center">
 		<button class="btn btn-info" id="SendEmailButton" onclick="return false;">
 			<i class="icon-envelope icon-white"></i> Send an Email to All Volunteers
@@ -345,6 +541,43 @@ a#CloseSendEmailPopup {position: absolute; top: 0; right: 0; padding: .5em; font
 		<a id="CloseSendEmailPopup" href="#">×</a>
 		<p>Below are the addresses of the volunteers in a format suitable for any email application. Please copy the entire text below and paste it all into the "To" field of a new email message.</p>
 		<textarea id="EmailAddressesToCopy"><?php print $emailAllVolunteersString; ?></textarea>
+	</div>
+</div>
+<div id="AddVolunteerPopup">
+	<div id="AddVolunteerPopupContainer">
+		<a id="CloseAddVolunteerPopup" href="#">×</a>
+		<form name="AddVolunteer">
+			<p>
+				<label>Name:</label>
+				<input type="text" name="Name"/>
+			</p>
+			<p>
+				<label>Email:</label>
+				<input type="text" name="Email"/>
+			</p>
+			<p class="text-center">
+				<button id="AddVolunteerSubmitButton" class="btn btn-large btn-success" onclick="return false;">Add</button>
+			</p>
+		</form>
+	</div>
+</div>
+<div id="EditVolunteerPopup">
+	<div id="EditVolunteerPopupContainer">
+		<a id="CloseEditVolunteerPopup" href="#">×</a>
+		<form name="EditVolunteer">
+			<input type="hidden" name="id" value="" />
+			<p>
+				<label>Name:</label>
+				<input type="text" name="Name"/>
+			</p>
+			<p>
+				<label>Email:</label>
+				<input type="text" name="Email"/>
+			</p>
+			<p class="text-center">
+				<button id="EditVolunteerSubmitButton" class="btn btn-large btn-success" onclick="return false;">Edit</button>
+			</p>
+		</form>
 	</div>
 </div>
 </body>

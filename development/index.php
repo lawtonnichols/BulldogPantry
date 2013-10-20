@@ -34,6 +34,7 @@ while ($row = $result->fetch_assoc())
 	$eventDescription = $row['event_description'];
 	$numberOfSpots = $row['number_of_spots'];
 	$eventID = $row['id'];
+	$eventLocation = $row['event_location'];
 	
 	$volunteers = $mysqli->query("select count(*) from volunteers where event_id = $eventID");
 	$volunteersRow = $volunteers->fetch_array();
@@ -47,6 +48,7 @@ while ($row = $result->fetch_assoc())
 		"<tr id=\"$eventID\">".
 			"<td><h4>$eventTitle</h4></td>".
 			"<td>$dateString</td>".
+			"<td>$eventLocation</td>".
 			"<td>$eventDescription</td>".
 			"<td class=\"SpotsLeft\">$numberOfSpotsLeft</td>".
 		"</tr>";
@@ -146,13 +148,14 @@ $(document).ready(function () {
 			var id = $(this).attr('id');
 			var title = $(this).get(0).childNodes[0].childNodes[0].innerHTML;
 			var date = $(this).get(0).childNodes[1].innerHTML;
-			var spotsLeft = $(this).get(0).childNodes[3].innerHTML;
+			var location = $(this).get(0).childNodes[2].innerHTML;
+			var spotsLeft = $(this).get(0).childNodes[4].innerHTML;
 			if (parseInt(spotsLeft) == 0) {
 				alert("This event already has enough volunteers.")
 				return;
 			}
 			$("input#EmailAddress").val("");
-			$("div#CompleteSignUp h4").get(0).innerHTML = title + ", " + date;
+			$("div#CompleteSignUp h4").get(0).innerHTML = title + ", " + date + ", " + location;
 			$("div#CompleteSignUp input#EventID").val(id);
 			$("p#ClickOnEventP").hide("slow");
 			$("div#CompleteSignUp").show("slow");
@@ -172,7 +175,23 @@ $(document).ready(function () {
 	$("button#Confirm").click(function () {
 		var eventID = $("input#EventID").val();
 		var email = $("input#EmailAddress").val();
-		window.location = "/signup.php?EventID=" + eventID + "&EmailAddress=" + email;
+		var name = $("input#Name").val();
+		var errorText = "";
+		if (email.length == 0 && name.length == 0)
+			errorText = "Please enter your name and email address.";
+		else if (email.length == 0)
+			errorText = "Please enter your email address.";
+		else if (name.length == 0)
+			errorText = "Please enter your name.";
+		
+		if (errorText.length > 0)
+		{
+			alert(errorText);
+			return;
+		}
+		
+		// if there wasn't an error, redirect to the signup page
+		window.location = "/signup.php?EventID=" + eventID + "&Name=" + name + "&EmailAddress=" + email;
 	});
 	
 	$("button#PreviousPage").click(function () {
@@ -202,6 +221,7 @@ $(document).ready(function () {
 <h3 class="text-center">You are signing up for:</h3>
 <h4 class="text-center">Lorem Ipsum Dolor, Saturday, May 5, 2013, 11:00 a.m. to 12:00 p.m.</h4>
 <p class="text-center" id="ConfirmCancelP">
+	<input type="text" class="input-large search-query text-center" placeholder="Name" id="Name">
 	<input type="text" class="input-xlarge search-query text-center" placeholder="Email Address" id="EmailAddress">
 	<button class="btn btn-success btn-large" id="Confirm">Confirm</button>
 	<button class="btn btn-danger btn-large Cancel">Cancel</button>
@@ -212,8 +232,8 @@ $(document).ready(function () {
 
 <table class="table" id="EventTable">
 	<thead>
-		<th id="TitleHeader">Event Title</th><th id="DateHeader">Date</th><th>Event Description</th>
-		<th id="SpotsLeft">Spots Left</th>
+		<th id="TitleHeader">Event Title</th><th id="DateHeader">Date</th><th>Location</th>
+		<th>Event Description</th><th id="SpotsLeft">Spots Left</th>
 	</thead>
 	<tbody>
 		<?php foreach($html as $row) print $row . "\n"; ?>

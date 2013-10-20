@@ -50,6 +50,7 @@ p.text-right {padding-right: 1em; padding-top: .5em;}
 <?php displayUsername(); ?>
 <h1 class="text-center">Bulldog Pantry Administration</h1>
 <p class="text-center" id="First"><a href="viewEvents.php" class="btn btn-primary btn-large">Manage Events</a></p>
+<p class="text-center"><a href="manageLocations.php" class="btn btn-primary btn-large">Manage Locations</a></p>
 <p class="text-center"><a href="changePassword.php" class="btn btn-info btn-large">Change Password</a></p>
 <p class="text-center"><a href="deleteOldEvents.php" class="btn btn-warning btn-large">Delete Old Events</a></p>
 <p class="text-center"><a href="resetDB.php" class="btn btn-danger btn-large super-dangerous">Reset the Database</a></p>

@@ -1,6 +1,6 @@
 <?php
 
-if (!isset($_GET['EventID']) || !isset($_GET['EmailAddress']))
+if (!isset($_GET['EventID']) || !isset($_GET['EmailAddress']) || !isset($_GET['Name']))
 {
 	header("Location: /error.html");
 	return;
@@ -17,6 +17,7 @@ $mysqli->select_db("BulldogPantry");
 
 $eventID = $mysqli->real_escape_string($_GET['EventID']);
 $emailAddress = $mysqli->real_escape_string($_GET['EmailAddress']);
+$name = $mysqli->real_escape_string($_GET['Name']);
 $cancelCode = generateCancelCode(11);
 
 // see if this person has already signed up for this event
@@ -28,7 +29,7 @@ if ($result->num_rows > 0)
 	return;
 }
 
-$mysqli->query("insert into volunteers (email, event_id, cancel_code) values ('$emailAddress', $eventID, '$cancelCode')");
+$mysqli->query("insert into volunteers (email, name, event_id, cancel_code) values ('$emailAddress', '$name', $eventID, '$cancelCode')");
 
 $eventTitle = "";
 $eventDescription = "";
@@ -37,6 +38,7 @@ $result = $mysqli->query("select * from events where id = $eventID");
 if ($row = $result->fetch_assoc())
 {
 	$eventTitle = $row['event_title'];
+	$eventLocation = $row['event_location'];
 	$eventStart = getdate(strtotime($row['event_start']));
 	$eventEnd = getdate(strtotime($row['event_end']));
 	$eventDescription = $row['event_description'];
@@ -78,7 +80,7 @@ function timeString($timeArray)
 
 function sendConfirmationEmail()
 {
-	global $eventTitle, $eventDescription, $dateString, $cancelCode, $eventID, $emailUsername, $emailPassword;
+	global $eventTitle, $eventLocation, $eventDescription, $dateString, $cancelCode, $eventID, $emailUsername, $emailPassword;
 	$email = $_GET['EmailAddress']; // we don't want this escaped
 	
 	$cancelLink = "http://localhost/cancel.php?EventID=$eventID&EmailAddress=$email&CancelCode=$cancelCode";
@@ -86,9 +88,10 @@ function sendConfirmationEmail()
 	$to = $email;
 	$subject = "Bulldog Pantry Signup Confirmation—$eventTitle";
 	$body = "You have successfully signed up for this event on ".
-			"$dateString If you should wish to cancel, please ".
-			"<a href='$cancelLink'>click here</a>. If you have ".
-			"any questions, please reply to this email. See you soon!";
+			"$dateString at $eventLocation. If you should wish ".
+			"to cancel, please <a href='$cancelLink'>click here".
+			"</a>. If you have any questions, please reply to ". 
+			"this email. See you soon!";
 	$from = $emailUsername;
 	
 	$toArray = explode(";", $to);
