@@ -34,12 +34,16 @@ while ($row = $result->fetch_assoc())
 	$eventDescription = $row['event_description'];
 	$numberOfSpots = $row['number_of_spots'];
 	$eventID = $row['id'];
-	$eventLocation = $row['event_location'];
+	$eventLocation = $row['event_location_id'];
 	
 	$volunteers = $mysqli->query("select count(*) from volunteers where event_id = $eventID");
 	$volunteersRow = $volunteers->fetch_array();
 	$numberOfPeopleSignedUp = $volunteersRow[0];
 	$numberOfSpotsLeft = $numberOfSpots - $numberOfPeopleSignedUp;
+	
+	$eventLocation = $mysqli->query("select * from locations where id=$eventLocation");
+	$locationRow = $eventLocation->fetch_assoc();
+	$eventLocation = "<a href='http://maps.google.com/maps?q=" . $locationRow['position'] . "' title='Click here for a map or for directions'>" . $locationRow['name'] . "</a>";
 	
 	$dateString = $eventStart['weekday'].',&nbsp;'.$eventStart['month'].'&nbsp;'.$eventStart['mday'].',&nbsp;'.$eventStart['year'].
 				  '<br />'.timeString($eventStart).' to '.timeString($eventEnd);

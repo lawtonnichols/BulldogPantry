@@ -2,6 +2,21 @@
 
 require_once("startSessionOrError.php"); 
 
+function FillLocations()
+{
+	$mysqli = new mysqli("localhost", "root", "root");
+	$mysqli->select_db("BulldogPantry");
+	$result = $mysqli->query("select * from locations");
+	while ($row = $result->fetch_assoc())
+	{
+		$html = "<tr class='id=" . $row['id'] . "'><td style='width: 100%'>" . $row['name'] . "</td>" .
+				"<td><button class='btn btn-warning ChangeName' style='min-width: 9em;'>Change Name</button></td>" . 
+				"<td><button class='btn btn-warning ChangeLocation' style='min-width: 10em;'>Change Location</button></td>" .
+				"<td><button class='btn btn-danger Remove' style='min-width: 5em;'>Remove</button></td></tr>";
+		print $html;
+	}
+}
+
 ?>
 <!doctype html>
 <html>
@@ -116,7 +131,7 @@ $(document).ready(function () {
 			var name = prompt("Please enter the name you would like to give this location.");
 			if (name.length > 0)
 			{
-				AddLocation(name, lastPosition);
+				AddLocation(name, lastPosition.toString());
 			}
 		}
 	});
@@ -125,8 +140,9 @@ $(document).ready(function () {
 		var newName = prompt("Enter a new name.");
 		if (newName.length > 0)
 		{
-			var childToEdit = $(this).get(0).parentNode.parentNode.childNodes[0];
-			childToEdit.innerHTML = newName;
+			var childToEdit = $(this).get(0).parentNode.parentNode;
+			EditLocation(childToEdit, newName, null);
+			//childToEdit.childNodes[0].innerHTML = newName;
 		}
 	});
 	
@@ -141,27 +157,117 @@ $(document).ready(function () {
 	
 	$("#LocationTable").on("click", ".UpdateLocation", function () {
 		var tr = $(this).get(0).parentNode.parentNode;
-		tr.className = "position=" + lastPosition;
+		//tr.className = "position=" + lastPosition;
 		$(this).html("Change Location");
 		$(this).removeClass("UpdateLocation");
 		$(this).addClass("ChangeLocation");
 		$(this).removeClass("btn-success");
 		$(this).addClass("btn-warning");
+		EditLocation(tr, null, lastPosition.toString());
 	});
 	
 	$("#LocationTable").on("click", ".Remove", function () {
 		var childToRemove = $(this).get(0).parentNode.parentNode;
-		$("#LocationTable").get(0).removeChild(childToRemove);
+		//$("#LocationTable").get(0).removeChild(childToRemove);
+		RemoveLocation(childToRemove);
 	});
 });
 
+function EditLocation(childToEdit, name, location)
+{
+	var regex = /.*id=([^&]*)/; // to match the id
+	var id = childToEdit.className.match(regex)[1];
+	var d = {"request_type": "edit", "id": id};
+	if (name != null)
+		d["name"] = name;
+	if (location != null)
+		d["position"] = location;
+	var jqxhr = $.ajax("ajaxManageLocations.php",
+		  		{
+			    	data: d,
+					type: "POST",
+					dataType: "json"
+				}
+				);
+				
+	jqxhr.done(function (data, textStatus, jqXHR) {
+		if (data.success == false)
+		{
+			alert("There was an error editing the location; please try again.");
+		}
+		else
+		{
+			if (name != null)
+				childToEdit.childNodes[0].innerHTML = name;
+			else if (location != null)
+				alert("The location has been successfully updated.");
+		}
+	});
+	
+	jqxhr.fail(function () {
+		alert("There was an error editing the location; please try again.");
+	});
+}
+
+function RemoveLocation(childToRemove)
+{
+	var regex = /.*id=([^&]*)/; // to match the id
+	var id = childToRemove.className.match(regex)[1];
+	var d = {"request_type": "remove", "id": id};
+	var jqxhr = $.ajax("ajaxManageLocations.php",
+		  		{
+			    	data: d,
+					type: "POST",
+					dataType: "json"
+				}
+				);
+				
+	jqxhr.done(function (data, textStatus, jqXHR) {
+		if (data.success == false)
+		{
+			alert("There was an error removing the location; please try again.");
+		}
+		else
+		{
+			$("#LocationTable").get(0).removeChild(childToRemove);
+		}
+	});
+	
+	jqxhr.fail(function () {
+		alert("There was an error removing the location; please try again.");
+	});
+}
+
 function AddLocation(name, position)
 {
-	var html = "<tr class='position=" + position + "'><td style='width: 100%'>" + name + "</td>" +
+	var d = {"request_type": "add", "name": name, "position": position};
+	var jqxhr = $.ajax("ajaxManageLocations.php",
+		  		{
+			    	data: d,
+					type: "POST",
+					dataType: "json"
+				}
+				);
+				
+	jqxhr.done(function (data, textStatus, jqXHR) {
+		if (data.success == "false")
+		{
+			alert("There was an error adding the location; please try again.");
+		}
+		else
+		{
+			var id = data.id;
+			var html = "<tr class='id=" + id + "'><td style='width: 100%'>" + name + "</td>" +
 				"<td><button class='btn btn-warning ChangeName' style='min-width: 9em;'>Change Name</button></td>" + 
 				"<td><button class='btn btn-warning ChangeLocation' style='min-width: 10em;'>Change Location</button></td>" + 
 				"<td><button class='btn btn-danger Remove' style='min-width: 5em;'>Remove</button></td></tr>";
-	$("#LocationTable").get(0).innerHTML += html;
+			$("#LocationTable").get(0).innerHTML += html;
+		}
+	});
+	
+	jqxhr.fail(function () {
+		alert("There was an error adding the location; please try again.");
+	});
 }
 </script>
 
@@ -189,7 +295,7 @@ div#panel {padding-bottom: 1em;}
 		<tr><th colspan="4">Location Name</th></tr>
 	</thead>
 	<tbody id="LocationTable">
-
+		<?php FillLocations(); ?>
 	</tbody>
 </table>
 </div>

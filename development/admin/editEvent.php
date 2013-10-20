@@ -24,7 +24,7 @@ $row = $result->fetch_assoc();
 $eventTitle = $row['event_title'];
 $eventStart = date_parse($row['event_start']);
 $eventEnd = date_parse($row['event_end']);
-$eventLocation = $row['event_location'];
+$eventLocation = $row['event_location_id'];
 $eventDescription = $row['event_description'];
 $numberOfSpots = $row['number_of_spots'];
 $volunteerEmails = array();
@@ -137,6 +137,20 @@ function printVolunteerEmails()
 	print $output;
 }
 
+function PrintLocationOptions()
+{	
+	global $mysqli, $eventLocation;
+	$result = $mysqli->query("select * from locations order by name");
+	while ($row = $result->fetch_assoc())
+	{
+		if ($eventLocation == $row['id'])
+			$html = "<option value='" . $row['id'] . "' selected='selected'>" . $row['name'] . "</option>";
+		else
+			$html = "<option value='" . $row['id'] . "'>" . $row['name'] . "</option>";
+		print $html;
+	}
+}
+
 ?>
 <!doctype html>
 <html>
@@ -166,7 +180,7 @@ function validate()
 	var eventTitle = f.EventTitle.value;
 	var date = f.Date.value;
 	var numberOfSpots = f.NumberOfSpots.value;
-	var eventLocation = f.EventLocation.value;
+	//var eventLocation = f.EventLocation.value;
 	
 	if (eventTitle.length == 0)
 	{
@@ -178,11 +192,11 @@ function validate()
 		$("#NumberOfSpotsError").html("<strong>Please enter the number of spots.</strong>");
 		ret = false;
 	}
-	if (eventLocation.length == 0)
+	/*if (eventLocation.length == 0)
 	{
 		$("#EventLocationError").html("<strong>Please enter the location of the event.</strong>");
 		ret = false;
-	}
+	}*/
 	if (date.length == 0)
 	{
 		$("#DateError").html("<strong>Please enter a date.</strong>");
@@ -427,7 +441,9 @@ table#VolunteerTable tbody tr:hover {background: #e1f3ff;}
 	<p>
 		<label>Location:</label>
 		<label id="EventLocationError" class="text-error"></label>
-		<input type="text" name="EventLocation" value="<?php print $eventLocation; ?>">
+		<select name="EventLocation">
+			<?php PrintLocationOptions(); ?>
+		</select>
 	</p>
 	<p>
 		<label>Start Time:</label>

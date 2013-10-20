@@ -38,7 +38,7 @@ $result = $mysqli->query("select * from events where id = $eventID");
 if ($row = $result->fetch_assoc())
 {
 	$eventTitle = $row['event_title'];
-	$eventLocation = $row['event_location'];
+	$eventLocation = $row['event_location_id'];
 	$eventStart = getdate(strtotime($row['event_start']));
 	$eventEnd = getdate(strtotime($row['event_end']));
 	$eventDescription = $row['event_description'];
@@ -82,6 +82,10 @@ function sendConfirmationEmail()
 {
 	global $eventTitle, $eventLocation, $eventDescription, $dateString, $cancelCode, $eventID, $emailUsername, $emailPassword;
 	$email = $_GET['EmailAddress']; // we don't want this escaped
+	
+	$eventLocation = $mysqli->query("select * from locations where id=$eventLocationID");
+	$locationRow = $eventLocation->fetch_assoc();
+	$eventLocation = "<a href='http://maps.google.com/maps?q=" . $locationRow['position'] . "'>" . $locationRow['name'] . "</a>";
 	
 	$cancelLink = "http://localhost/cancel.php?EventID=$eventID&EmailAddress=$email&CancelCode=$cancelCode";
 	

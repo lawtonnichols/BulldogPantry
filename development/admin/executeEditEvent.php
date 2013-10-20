@@ -90,7 +90,7 @@ $eventDescription = $mysqli->real_escape_string($eventDescription);
 $numberOfSpots = $mysqli->real_escape_string($numberOfSpots);
 
 $query = "update events set event_title = '$eventTitle', event_start = '$startTimeString', event_end = '$endTimeString', ".
-		 "event_description = '$eventDescription', number_of_spots = '$numberOfSpots', event_location = '$eventLocation' ".
+		 "event_description = '$eventDescription', number_of_spots = '$numberOfSpots', event_location_id = '$eventLocation' ".
 		 "where id = $eventID";
 $mysqli->query($query);
 

@@ -87,7 +87,7 @@ $eventDescription = $mysqli->real_escape_string($eventDescription);
 $numberOfSpots = $mysqli->real_escape_string($numberOfSpots);
 $eventLocation = $mysqli->real_escape_string($eventLocation);
 
-$query = "insert into events (event_title, event_start, event_end, event_description, event_location, number_of_spots) values " .
+$query = "insert into events (event_title, event_start, event_end, event_description, event_location_id, number_of_spots) values " .
 		 "('$eventTitle', '$startTimeString', '$endTimeString', '$eventDescription', '$eventLocation', $numberOfSpots)";
 
 $mysqli->query($query);

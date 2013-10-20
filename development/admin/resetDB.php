@@ -69,14 +69,22 @@ $query = <<<END
 		index(username)
 	);
 	
+	create table locations (
+		id int not null auto_increment primary key,
+		name varchar(256) not null,
+		position varchar(512) not null,
+		index(name), index(position)
+	);
+	
 	create table events (
 		id int not null auto_increment primary key,
 		event_title varchar(150) not null,
 		event_start datetime not null,
 		event_end datetime not null,
 		event_description varchar(500),
-		event_location varchar(200),
+		event_location_id int not null,
 		number_of_spots int not null,
+		foreign key(event_location_id) references locations(id) on delete cascade,
 		index(event_start)
 	);
 	
