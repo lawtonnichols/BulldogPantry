@@ -24,7 +24,7 @@ if ($request_type == "add")
 	if ($row = $result->fetch_assoc())
 	{
 		$id = $row['id'];
-		$output = '{"success": "true", "id": "'. $id . '"}';
+		$output = '{"success": "true", "id": "'. $id . '", "position": "' . $row['position'] .  '"}';
 		print $output;
 	}
 	else

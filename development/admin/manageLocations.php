@@ -9,7 +9,7 @@ function FillLocations()
 	$result = $mysqli->query("select * from locations");
 	while ($row = $result->fetch_assoc())
 	{
-		$html = "<tr class='id=" . $row['id'] . "'><td style='width: 100%'>" . $row['name'] . "</td>" .
+		$html = "<tr class='id=" . $row['id'] . "&position=" . $row['position'] . "'><td style='width: 100%'>" . $row['name'] . "</td>" .
 				"<td><button class='btn btn-warning ChangeName' style='min-width: 9em;'>Change Name</button></td>" . 
 				"<td><button class='btn btn-warning ChangeLocation' style='min-width: 10em;'>Change Location</button></td>" .
 				"<td><button class='btn btn-danger Remove' style='min-width: 5em;'>Remove</button></td></tr>";
@@ -33,6 +33,8 @@ function FillLocations()
 
 <script>
 var lastPosition = null;
+var mainMarker = null;
+var map = null;
 
 // from https://developers.google.com/maps/documentation/javascript/examples/event-simple
 function initialize() {
@@ -44,10 +46,10 @@ function initialize() {
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
 
-  var map = new google.maps.Map(document.getElementById('map-canvas'),
+  map = new google.maps.Map(document.getElementById('map-canvas'),
       mapOptions);
 
-  var mainMarker = new google.maps.Marker({
+  mainMarker = new google.maps.Marker({
     position: map.getCenter(),
     map: map,
     title: 'Location',
@@ -135,6 +137,19 @@ $(document).ready(function () {
 			}
 		}
 	});
+
+	$("#LocationTable").on("click", "tr td:first-child", function () {
+		var regex2 = /.*position=([^&]*)/; // to match the position
+		var position = this.parentNode.className.match(regex2)[1];
+
+		position = position.substring(1, position.length-1);
+		var latlngStr = position.split(",",2);
+		var newPosition = new google.maps.LatLng(parseFloat(latlngStr[0]), parseFloat(latlngStr[1]))
+
+		mainMarker.setPosition(newPosition);
+		map.setCenter(mainMarker.getPosition());
+		lastPosition = mainMarker.getPosition();
+	});
 	
 	$("#LocationTable").on("click", ".ChangeName", function () {
 		var newName = prompt("Enter a new name.");
@@ -176,7 +191,9 @@ $(document).ready(function () {
 function EditLocation(childToEdit, name, location)
 {
 	var regex = /.*id=([^&]*)/; // to match the id
+	var regex2 = /.*position=([^&]*)/; // to match the position
 	var id = childToEdit.className.match(regex)[1];
+	var position = childToEdit.className.match(regex2)[1];
 	var d = {"request_type": "edit", "id": id};
 	if (name != null)
 		d["name"] = name;
@@ -200,7 +217,10 @@ function EditLocation(childToEdit, name, location)
 			if (name != null)
 				childToEdit.childNodes[0].innerHTML = name;
 			else if (location != null)
+			{
+				childToEdit.className = "id=" + id + "&position=" + location;
 				alert("The location has been successfully updated.");
+			}
 		}
 	});
 	
@@ -257,7 +277,8 @@ function AddLocation(name, position)
 		else
 		{
 			var id = data.id;
-			var html = "<tr class='id=" + id + "'><td style='width: 100%'>" + name + "</td>" +
+			var position = data.position;
+			var html = "<tr class='id=" + id + "&position=" + position + "'><td style='width: 100%'>" + name + "</td>" +
 				"<td><button class='btn btn-warning ChangeName' style='min-width: 9em;'>Change Name</button></td>" + 
 				"<td><button class='btn btn-warning ChangeLocation' style='min-width: 10em;'>Change Location</button></td>" + 
 				"<td><button class='btn btn-danger Remove' style='min-width: 5em;'>Remove</button></td></tr>";

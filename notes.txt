@@ -20,3 +20,7 @@ advertisement
 ajax
 
 http://i.imgur.com/TMPtUhu.png
+
+Tutorial/Help Manual
+Facebook integration
+Reminder email

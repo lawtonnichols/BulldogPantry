@@ -239,6 +239,14 @@ $(document).ready(function () {
 	});
 	
 	$("#SendEmailButton").click(function() {
+		var addresses = "";
+		var nodes = $("#VolunteerTableBody").get(0).childNodes;
+		for (var i = 0; i < nodes.length; i++)
+		{
+			var email = nodes[i].childNodes[1].innerHTML;
+			addresses += email + ";\n";
+		}
+		$("#EmailAddressesToCopy").html(addresses);
 		$("#SendEmailPopup").show("slow");
 	});
 	
@@ -556,7 +564,7 @@ table#VolunteerTable tbody tr:hover {background: #e1f3ff;}
 	<div id="SendEmailPopupContainer">
 		<a id="CloseSendEmailPopup" href="#">×</a>
 		<p>Below are the addresses of the volunteers in a format suitable for any email application. Please copy the entire text below and paste it all into the "To" field of a new email message.</p>
-		<textarea id="EmailAddressesToCopy"><?php print $emailAllVolunteersString; ?></textarea>
+		<textarea id="EmailAddressesToCopy"></textarea>
 	</div>
 </div>
 <div id="AddVolunteerPopup">
